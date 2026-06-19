@@ -47,7 +47,10 @@ export function ItemSelector({ value, onChange }: ItemSelectorProps) {
   }, [query, items, open]);
 
   const handleToggle = () => {
-    setOpen((prev) => !prev);
+    setOpen((prev) => {
+      if (!prev) setQuery("");
+      return !prev;
+    });
   };
 
   const selectedItem = value

@@ -98,6 +98,7 @@ export function BuilderView() {
       <div className="flex-1 overflow-hidden">
         {member ? (
           <FullPageEditor
+            key={activeSlot}
             member={member}
             hideHeader
             onBack={() => {}}

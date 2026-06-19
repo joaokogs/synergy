@@ -54,6 +54,8 @@ export function PokemonSearchDialog({
       try {
         const data = await getPokemonData(item.id);
         onSelect(data);
+        setQuery("");
+        setResults([]);
         onOpenChange(false);
       } catch {
         console.error("Failed to load Pokemon data");
