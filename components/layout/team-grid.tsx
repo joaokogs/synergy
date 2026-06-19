@@ -5,7 +5,7 @@ import type { PokemonBase } from "@/types/pokemon";
 import { PokemonCard } from "@/components/pokemon/pokemon-card";
 import { PokemonCardEmpty } from "@/components/pokemon/pokemon-card-empty";
 import { PokemonEditor } from "@/components/editor/pokemon-editor";
-import { SearchCombobox } from "@/components/editor/search-combobox";
+import { PokemonSearchDialog } from "@/components/editor/pokemon-search-dialog";
 import { useTeam } from "@/hooks/use-team";
 
 interface TeamGridProps {
@@ -60,7 +60,7 @@ export function TeamGrid({ onEdit }: TeamGridProps) {
         })}
       </div>
 
-      <SearchCombobox
+      <PokemonSearchDialog
         open={addingSlot !== null}
         onOpenChange={(open) => {
           if (!open) setAddingSlot(null);

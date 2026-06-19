@@ -5,7 +5,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { useTeam } from "@/hooks/use-team";
 import { BuilderTabs } from "./builder-tabs";
 import { FullPageEditor } from "@/components/editor/full-page-editor";
-import { SearchCombobox } from "@/components/editor/search-combobox";
+import { PokemonSearchDialog } from "@/components/editor/pokemon-search-dialog";
 import {
   Dialog,
   DialogContent,
@@ -68,7 +68,7 @@ export function BuilderView() {
         >
           Add a Pokémon
         </button>
-        <SearchCombobox
+        <PokemonSearchDialog
           open={addingSlot !== null}
           onOpenChange={(open) => {
             if (!open) setAddingSlot(null);
@@ -119,7 +119,7 @@ export function BuilderView() {
           </div>
         )}
       </div>
-      <SearchCombobox
+      <PokemonSearchDialog
         open={addingSlot !== null}
         onOpenChange={(open) => {
           if (!open) setAddingSlot(null);

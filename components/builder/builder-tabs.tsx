@@ -85,17 +85,25 @@ export function BuilderTabs({ members, activeSlot, onSelectSlot, onRemoveSlot }:
               <span className="truncate max-w-[60px] sm:max-w-[100px]">
                 {member.pokemon.displayName}
               </span>
-              <button
-                type="button"
+              <span
+                role="button"
+                tabIndex={0}
                 onClick={(e) => {
                   e.stopPropagation();
                   onRemoveSlot(slot);
                 }}
-                className="ml-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-sm text-pk-text-secondary/50 opacity-0 transition-all hover:bg-pk-hover-bg hover:text-pk-text-primary group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onRemoveSlot(slot);
+                  }
+                }}
+                className="ml-0.5 flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-sm text-pk-text-secondary/50 opacity-0 transition-all hover:bg-pk-hover-bg hover:text-pk-text-primary group-hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none"
                 aria-label={`Remove ${member.pokemon.displayName}`}
               >
                 <X className="h-3 w-3" />
-              </button>
+              </span>
             </TabButton>
           );
         })}
