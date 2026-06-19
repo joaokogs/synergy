@@ -8,6 +8,11 @@ import { TypeIcon } from "@/components/pokemon/type-icon";
 import { CategoryIcon } from "@/components/pokemon/category-icon";
 import { getMoveData, type MoveInfo } from "@/lib/pokeapi";
 import type { PokemonType } from "@/types/pokemon";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 interface MovesetEditorProps {
   moves: (string | null)[];
@@ -22,12 +27,25 @@ export function MovesetEditor({
 }: MovesetEditorProps) {
   const [activeSlot, setActiveSlot] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (activeSlot !== null) {
-      inputRefs.current[activeSlot]?.focus();
+      searchInputRef.current?.focus();
     }
+  }, [activeSlot]);
+
+  useEffect(() => {
+    if (activeSlot === null) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setActiveSlot(null);
+        setSearchQuery("");
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [activeSlot]);
 
   const filteredMoves = useMemo(
@@ -47,25 +65,20 @@ export function MovesetEditor({
         newMoves[otherSlot] = null;
       newMoves[activeSlot] = move;
       onChange(newMoves);
+      setActiveSlot(null);
       setSearchQuery("");
     },
     [activeSlot, moves, onChange]
   );
 
   const handleSlotClick = (slot: number) => {
-    if (activeSlot === slot) return;
+    if (activeSlot === slot) {
+      setActiveSlot(null);
+      setSearchQuery("");
+      return;
+    }
     setActiveSlot(slot);
     setSearchQuery("");
-  };
-
-  const handleInputChange = (slot: number, value: string) => {
-    setActiveSlot(slot);
-    setSearchQuery(value);
-    if (!value.trim()) {
-      const newMoves = [...moves];
-      newMoves[slot] = null;
-      onChange(newMoves);
-    }
   };
 
   const clearSlot = (slot: number) => {
@@ -78,7 +91,7 @@ export function MovesetEditor({
   const filled = moves.filter(Boolean).length;
 
   return (
-    <div className="flex flex-col gap-5">
+    <div ref={containerRef} className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <p className="text-xs font-bold uppercase tracking-wider text-pk-text-secondary">
           Golpes
@@ -86,76 +99,84 @@ export function MovesetEditor({
         <span className="text-sm text-pk-text-secondary">{filled}/4</span>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-1">
         {[0, 1, 2, 3].map((slot) => (
-          <MoveSlotInput
+          <MoveSlotBadge
             key={slot}
             slot={slot}
             moveName={moves[slot]}
             isActive={activeSlot === slot}
-            searchQuery={activeSlot === slot ? searchQuery : ""}
             onClick={() => handleSlotClick(slot)}
-            onChange={(value) => handleInputChange(slot, value)}
             onClear={() => clearSlot(slot)}
-            inputRef={(el) => {
-              inputRefs.current[slot] = el;
-            }}
           />
         ))}
       </div>
 
-      {activeSlot !== null && searchQuery.trim() && (
-        <div className="rounded-xl border border-pk-border bg-pk-card-bg shadow-lg">
-          {filteredMoves.length === 0 ? (
-            <div className="flex flex-col items-center gap-2 p-8 text-sm text-pk-text-secondary">
-              <Search className="h-8 w-8 opacity-40" />
-              <span>Nenhum golpe para &ldquo;{searchQuery}&rdquo;</span>
-            </div>
-          ) : (
-            <div className="max-h-[300px] divide-y divide-pk-border overflow-y-auto">
-              {filteredMoves.map((move) => (
-                <MoveOption
-                  key={move}
-                  move={move}
-                  isSelected={moves.includes(move)}
-                  isCurrentSlot={moves[activeSlot] === move}
-                  onClick={() => selectMove(move)}
-                />
-              ))}
+      {activeSlot !== null && (
+        <div className="space-y-2">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-pk-text-secondary/50" />
+            <input
+              ref={searchInputRef}
+              type="text"
+              placeholder={`Buscar golpe para slot ${activeSlot + 1}...`}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full border border-pk-border bg-pk-muted-bg py-2.5 pl-10 pr-4 text-sm text-pk-text-primary outline-none placeholder:text-pk-text-secondary/40 focus:ring-1 focus:ring-pk-text-primary"
+            />
+          </div>
+
+          {searchQuery.trim() && (
+            <>
+              {filteredMoves.length === 0 && (
+                <div className="border border-pk-border bg-pk-card-bg p-8 text-center text-sm text-pk-text-secondary shadow-sm">
+                  <div className="flex flex-col items-center gap-2">
+                    <Search className="h-8 w-8 opacity-40" />
+                    <span>Nenhum golpe para &ldquo;{searchQuery}&rdquo;</span>
+                  </div>
+                </div>
+              )}
+              {filteredMoves.length > 0 && (
+                <div className="max-h-[300px] space-y-1 overflow-y-auto">
+                  {filteredMoves.map((move) => (
+                    <MoveOption
+                      key={move}
+                      move={move}
+                      isSelected={moves.includes(move)}
+                      isCurrentSlot={moves[activeSlot] === move}
+                      onClick={() => selectMove(move)}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+
+          {!searchQuery.trim() && (
+            <div className="border-2 border-dashed border-pk-border p-6 text-center text-sm text-pk-text-secondary">
+              Digite o nome do golpe para buscar
             </div>
           )}
-        </div>
-      )}
-
-      {activeSlot !== null && !searchQuery.trim() && (
-        <div className="rounded-xl border-2 border-dashed border-pk-border p-6 text-center text-sm text-pk-text-secondary">
-          Digite o nome do golpe para buscar
         </div>
       )}
     </div>
   );
 }
 
-// ─── Move Slot Input ─────────────────────────────────
+// ─── Move Slot Badge ─────────────────────────────────
 
-function MoveSlotInput({
+function MoveSlotBadge({
   slot,
   moveName,
   isActive,
-  searchQuery,
   onClick,
-  onChange,
   onClear,
-  inputRef,
 }: {
   slot: number;
   moveName: string | null;
   isActive: boolean;
-  searchQuery: string;
   onClick: () => void;
-  onChange: (value: string) => void;
   onClear: () => void;
-  inputRef: (el: HTMLInputElement | null) => void;
 }) {
   const [moveData, setMoveData] = useState<MoveInfo | null>(null);
 
@@ -172,68 +193,114 @@ function MoveSlotInput({
 
   const moveType = moveData?.type ?? "normal";
   const typeColor = TYPE_COLORS[moveType] ?? "#A8A77A";
+  const hasMove = !!(moveName && moveData);
 
-  // Se tem golpe, mostra badge com nome bonito. Input só em slot vazio ativo.
-  const showFilled = !!(moveName && moveData);
-  const showEmptyInput = !moveName && isActive;
+  const displayName = moveData?.displayName ?? moveName?.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
+  if (!hasMove) {
+    return (
+      <div
+        className={cn(
+          "flex items-center gap-2 border border-pk-border bg-pk-muted-bg px-3 py-2.5 cursor-pointer transition-all",
+          isActive && "ring-1 ring-pk-text-primary"
+        )}
+        onClick={onClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") onClick(); }}
+      >
+        <span className="w-3 shrink-0 text-[10px] font-bold text-pk-text-secondary opacity-30">
+          —
+        </span>
+        <span className="flex-1 text-xs text-pk-text-secondary opacity-50">
+          Move
+        </span>
+      </div>
+    );
+  }
 
   return (
-    <div
-      className={cn(
-        "flex items-center gap-2.5 rounded-lg border-2 px-3 py-2.5 transition-all",
-        showEmptyInput
-          ? "border-pk-text-primary bg-pk-card-bg shadow-md ring-1 ring-pk-text-primary/10 cursor-text"
-          : showFilled
-            ? "bg-pk-card-bg cursor-default"
-            : "border-dashed border-pk-border bg-pk-card-bg/60 hover:border-pk-text-primary/40 cursor-pointer"
-      )}
-      style={
-        showFilled
-          ? { borderColor: typeColor, backgroundColor: `${typeColor}08` }
-          : undefined
-      }
-      onClick={!showFilled ? onClick : undefined}
-    >
-      {/* Icon do tipo / número do slot */}
-      {showFilled ? (
-        <TypeIcon type={moveType} size={20} className="shrink-0" />
-      ) : (
-        <span className="text-xs font-bold text-pk-text-secondary opacity-30 w-5 text-center shrink-0">
-          {slot + 1}
-        </span>
-      )}
-
-      {/* Input / Nome */}
-      {showEmptyInput ? (
-        <input
-          ref={inputRef}
-          placeholder={`Buscar golpe ${slot + 1}...`}
-          value={searchQuery}
-          onChange={(e) => onChange(e.target.value)}
-          className="flex-1 bg-transparent text-sm font-medium outline-none text-pk-text-primary placeholder:text-pk-text-secondary/40"
-        />
-      ) : showFilled ? (
-        <span className="flex-1 truncate text-sm font-semibold text-pk-text-primary">
-          {moveData?.displayName ?? ""}
-        </span>
-      ) : (
-        <span className="flex-1 text-sm text-pk-text-secondary/50">{`Golpe ${slot + 1}`}</span>
-      )}
-
-      {/* Botão limpar (só quando preenchido) */}
-      {showFilled && (
+    <Popover>
+      <PopoverTrigger
+        render={<div />}
+        nativeButton={false}
+        openOnHover
+        delay={300}
+        closeDelay={200}
+        className={cn(
+          "relative flex items-center border border-pk-border bg-pk-muted-bg px-3 py-2.5 transition-all group",
+          isActive && "ring-1 ring-pk-text-primary"
+        )}
+        style={{ borderLeftColor: typeColor, borderLeftWidth: 3 }}
+      >
+        <div
+          className="flex flex-1 items-center cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClick();
+          }}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.stopPropagation(); onClick(); } }}
+        >
+          <TypeIcon type={moveType} size={14} className="absolute left-2 shrink-0" />
+          <span className="flex-1 truncate text-center text-xs font-semibold text-pk-text-primary">
+            {displayName}
+          </span>
+        </div>
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation();
             onClear();
           }}
-          className="flex h-5 w-5 items-center justify-center rounded-full text-pk-text-secondary opacity-50 transition-all hover:opacity-100 hover:bg-pk-sidebar-bg"
+          className="absolute right-1 flex h-5 w-5 items-center justify-center rounded-full text-pk-text-secondary opacity-0 transition-all group-hover:opacity-50 hover:opacity-100 hover:bg-pk-sidebar-bg"
         >
-          <X className="h-3.5 w-3.5" />
+          <X className="h-3 w-3" />
         </button>
+      </PopoverTrigger>
+      {moveData && (
+        <PopoverContent
+          side="top"
+          align="center"
+          sideOffset={6}
+          className="w-72 [&[data-slot=popover-content]]:rounded-none"
+        >
+          <div className="flex items-center gap-2 border-b border-border pb-2">
+            <TypeIcon type={moveType} size={18} />
+            <div>
+              <p className="text-sm font-bold text-foreground">{moveData.displayName}</p>
+              <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                {moveData.type} · {moveData.category === "physical" ? "Physical" : moveData.category === "special" ? "Special" : "Status"}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 pt-2 text-xs">
+            {moveData.power != null && (
+              <div className="text-center">
+                <p className="font-bold text-foreground">{moveData.power}</p>
+                <p className="text-[10px] text-muted-foreground">Power</p>
+              </div>
+            )}
+            <div className="text-center">
+              <p className="font-bold text-foreground">{moveData.ppMax}</p>
+              <p className="text-[10px] text-muted-foreground">PP</p>
+            </div>
+            {moveData.accuracy != null && (
+              <div className="text-center">
+                <p className="font-bold text-foreground">{moveData.accuracy === 0 ? "—" : `${moveData.accuracy}%`}</p>
+                <p className="text-[10px] text-muted-foreground">Accuracy</p>
+              </div>
+            )}
+          </div>
+          {moveData.effect && (
+            <p className="border-t border-border pt-2 text-xs leading-relaxed text-muted-foreground">
+              {moveData.effect}
+            </p>
+          )}
+        </PopoverContent>
       )}
-    </div>
+    </Popover>
   );
 }
 
@@ -269,51 +336,102 @@ function MoveOption({
     .replace(/-/g, " ")
     .replace(/\b\w/g, (c) => c.toUpperCase());
 
-  return (
-    <button
-      type="button"
-      className={cn(
-        "flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-pk-sidebar-bg",
-        isCurrentSlot && "bg-pk-sidebar-bg"
-      )}
-      onClick={onClick}
-    >
-      <div
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg"
-        style={{ backgroundColor: `${typeColor}20` }}
-      >
-        <TypeIcon type={type} size={20} />
-      </div>
-
-      <div className="flex-1 min-w-0">
-        <span className="block text-sm font-semibold text-pk-text-primary truncate">
-          {displayName}
-        </span>
-        <span
-          className="block text-[11px] font-bold uppercase leading-tight"
-          style={{ color: typeColor }}
-        >
-          {type}
-        </span>
-      </div>
-
-      <div className="flex shrink-0 items-center gap-2.5 text-xs text-pk-text-secondary">
+  const triggerContent = (
+    <>
+      <TypeIcon type={type} size={18} className="shrink-0" />
+      <span className="flex-1 truncate text-sm font-semibold text-pk-text-primary">
+        {displayName}
+      </span>
+      <div className="flex shrink-0 items-center gap-2 text-xs text-pk-text-secondary">
         {category !== "status" && moveData?.power != null && (
-          <span className="inline-flex items-center gap-1 rounded-md bg-pk-sidebar-bg px-2 py-1 font-mono font-bold">
+          <span className="font-mono font-bold" style={{ color: typeColor }}>
             {moveData.power}
           </span>
         )}
         {moveData?.ppMax != null && (
-          <span className="font-mono opacity-70">{moveData.ppMax}</span>
+          <span className="font-mono">{moveData.ppMax}</span>
         )}
         <CategoryIcon category={category} />
       </div>
-
       {isSelected && (
-        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-pk-text-primary">
-          <Check className="h-3.5 w-3.5 text-white" />
-        </div>
+        <Check className="h-4 w-4 shrink-0 text-pk-text-primary" />
       )}
-    </button>
+    </>
+  );
+
+  if (!moveData) {
+    return (
+      <button
+        type="button"
+        className="flex w-full items-center gap-3 px-4 py-3 text-left border border-pk-border shadow-sm transition-all hover:shadow-md hover:bg-pk-sidebar-bg"
+        onClick={onClick}
+      >
+        {triggerContent}
+      </button>
+    );
+  }
+
+  return (
+    <Popover>
+      <PopoverTrigger
+        render={(props) => (
+          <button
+            {...props}
+            type="button"
+            className={cn(
+              "flex w-full items-center gap-3 px-4 py-3 text-left border border-pk-border shadow-sm transition-all hover:shadow-md hover:bg-pk-sidebar-bg",
+              isCurrentSlot && "ring-1 ring-pk-text-primary"
+            )}
+            style={{ backgroundColor: `${typeColor}08`, borderLeft: `3px solid ${typeColor}` }}
+            onClick={(e) => { e.stopPropagation(); onClick(); }}
+          >
+            {triggerContent}
+          </button>
+        )}
+        nativeButton
+        openOnHover
+        delay={300}
+        closeDelay={200}
+      />
+        <PopoverContent
+          side="right"
+          align="center"
+          sideOffset={8}
+          className="w-72 [&[data-slot=popover-content]]:rounded-none"
+      >
+        <div className="flex items-center gap-2 border-b border-border pb-2">
+          <TypeIcon type={type} size={18} />
+          <div>
+            <p className="text-sm font-bold text-foreground">{moveData.displayName}</p>
+            <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+              {moveData.type} · {moveData.category === "physical" ? "Physical" : moveData.category === "special" ? "Special" : "Status"}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-3 pt-2 text-xs">
+          {moveData.power != null && (
+            <div className="text-center">
+              <p className="font-bold text-foreground">{moveData.power}</p>
+              <p className="text-[10px] text-muted-foreground">Power</p>
+            </div>
+          )}
+          <div className="text-center">
+            <p className="font-bold text-foreground">{moveData.ppMax}</p>
+            <p className="text-[10px] text-muted-foreground">PP</p>
+          </div>
+          {moveData.accuracy != null && (
+            <div className="text-center">
+              <p className="font-bold text-foreground">{moveData.accuracy === 0 ? "—" : `${moveData.accuracy}%`}</p>
+              <p className="text-[10px] text-muted-foreground">Accuracy</p>
+            </div>
+          )}
+        </div>
+        {moveData.effect && (
+          <p className="border-t border-border pt-2 text-xs leading-relaxed text-muted-foreground">
+            {moveData.effect}
+          </p>
+        )}
+      </PopoverContent>
+    </Popover>
   );
 }

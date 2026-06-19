@@ -1,18 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { PokemonSprite } from "@/components/pokemon/pokemon-sprite";
 import { TypeBadge } from "@/components/pokemon/type-badge";
-import { TypeIcon } from "@/components/pokemon/type-icon";
-import { CategoryIcon } from "@/components/pokemon/category-icon";
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { getStatName } from "@/lib/stat-calculator";
 import { ItemSelector } from "./item-selector";
 import { MovesetEditor } from "./moveset-editor";
-import { getMoveData, type MoveInfo } from "@/lib/pokeapi";
-import { TYPE_COLORS } from "@/lib/type-utils";
+
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import type { TeamPokemon, PokemonStat, PokemonType } from "@/types/pokemon";
 
@@ -361,27 +359,7 @@ export function FullPageEditor({
 
         {/* Right Column: Moveset */}
         <div className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto">
-          {/* Active Moveset */}
           <div className="border border-pk-border bg-pk-card-bg p-4">
-            <h3 className="mb-3 text-[10px] font-bold uppercase tracking-widest text-pk-text-primary">
-              Active Moveset
-            </h3>
-            <div className="space-y-2">
-              {[0, 1, 2, 3].map((slot) => (
-                <MoveSlot
-                  key={slot}
-                  slot={slot}
-                  moveName={moves[slot]}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Move Search */}
-          <div className="border border-pk-border bg-pk-card-bg p-4">
-            <h3 className="mb-2 text-[10px] font-bold uppercase tracking-widest text-pk-text-primary">
-              Move Search
-            </h3>
             <MovesetEditor
               moves={moves}
               availableMoves={pokemon.moves}
@@ -394,48 +372,4 @@ export function FullPageEditor({
   );
 }
 
-function MoveSlot({ slot, moveName }: { slot: number; moveName: string | null }) {
-  const [moveData, setMoveData] = useState<MoveInfo | null>(null);
 
-  useEffect(() => {
-    if (!moveName) return;
-    getMoveData(moveName).then(setMoveData);
-  }, [moveName]);
-
-  const moveType = (moveData?.type ?? "normal") as PokemonType;
-  const typeColor = TYPE_COLORS[moveType] ?? "#A8A77A";
-
-  return (
-    <div
-      className="flex items-center gap-2 border border-pk-border bg-pk-muted-bg px-3 py-2"
-      style={moveData ? { borderLeftColor: typeColor, borderLeftWidth: 3 } : undefined}
-    >
-      {moveData ? (
-        <>
-          <TypeIcon type={moveType} size={14} className="shrink-0" />
-          <span className="flex-1 text-xs font-semibold text-pk-text-primary truncate">
-            {moveData.displayName}
-          </span>
-          <div className="flex items-center gap-1.5 text-[10px] text-pk-text-secondary shrink-0">
-            {moveData.power != null && moveData.category !== "status" && (
-              <span className="font-mono font-bold">{moveData.power}</span>
-            )}
-            {moveData.category && (
-              <CategoryIcon category={moveData.category} />
-            )}
-            <span className="font-mono">PP {moveData.ppMax}</span>
-          </div>
-        </>
-      ) : (
-        <>
-          <span className="text-[10px] font-bold text-pk-text-secondary opacity-30 w-3 shrink-0">
-            {slot + 1}
-          </span>
-          <span className="flex-1 text-xs text-pk-text-secondary opacity-50">
-            {`Move ${slot + 1}`}
-          </span>
-        </>
-      )}
-    </div>
-  );
-}
