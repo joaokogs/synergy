@@ -1,24 +1,23 @@
 "use client";
 
-import { Swords, Users, Wrench, BookOpen, Settings, ExternalLink, Code2 } from "lucide-react";
+import { Swords, Users, Wrench, BookOpen, Settings, Code2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { usePathname, useRouter } from "next/navigation";
 
-export type ViewType = "team" | "editor" | "resources" | "settings";
+type ViewType = "team" | "editor" | "resources" | "settings";
 
-interface SidebarProps {
-  activeView: ViewType;
-  onNavigate: (view: ViewType) => void;
-}
-
-const navItems: { id: ViewType; label: string; icon: typeof Users }[] = [
-  { id: "team", label: "Teams", icon: Users },
-  { id: "editor", label: "Builder", icon: Wrench },
-  { id: "resources", label: "Resources", icon: BookOpen },
-  { id: "settings", label: "Settings", icon: Settings },
+const navItems: { path: string; label: string; icon: typeof Users }[] = [
+  { path: "/", label: "Teams", icon: Users },
+  { path: "/builder", label: "Builder", icon: Wrench },
+  { path: "/resources", label: "Resources", icon: BookOpen },
+  { path: "/settings", label: "Settings", icon: Settings },
 ];
 
-export function Sidebar({ activeView, onNavigate }: SidebarProps) {
+export function Sidebar() {
+  const pathname = usePathname();
+  const router = useRouter();
+
   return (
     <aside className="flex h-full w-64 shrink-0 flex-col border-r border-pk-border bg-pk-sidebar-bg">
       {/* Logo */}
@@ -40,12 +39,12 @@ export function Sidebar({ activeView, onNavigate }: SidebarProps) {
       <nav className="flex-1 space-y-1 px-4">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = activeView === item.id;
+          const isActive = pathname === item.path;
           return (
             <button
-              key={item.id}
+              key={item.path}
               type="button"
-              onClick={() => onNavigate(item.id)}
+              onClick={() => router.push(item.path)}
               className={cn(
                 "flex w-full items-center gap-4 rounded-md px-3 py-2.5 text-left text-sm font-bold tracking-wide transition-colors",
                 isActive
@@ -73,22 +72,13 @@ export function Sidebar({ activeView, onNavigate }: SidebarProps) {
 
       {/* Bottom Links */}
       <div className="border-t border-pk-border px-4 py-4">
-        <div className="space-y-1">
-          <button
-            type="button"
-            className="flex w-full items-center gap-4 rounded-md px-3 py-2 text-left text-sm font-bold text-pk-text-secondary transition-colors hover:text-pk-text-primary"
-          >
-            <ExternalLink className="h-4 w-4 shrink-0" />
-            <span>Support</span>
-          </button>
-          <button
-            type="button"
-            className="flex w-full items-center gap-4 rounded-md px-3 py-2 text-left text-sm font-bold text-pk-text-secondary transition-colors hover:text-pk-text-primary"
-          >
-            <Code2 className="h-4 w-4 shrink-0" />
-            <span>Github</span>
-          </button>
-        </div>
+        <button
+          type="button"
+          className="flex w-full items-center gap-4 rounded-md px-3 py-2 text-left text-sm font-bold text-pk-text-secondary transition-colors hover:text-pk-text-primary"
+        >
+          <Code2 className="h-4 w-4 shrink-0" />
+          <span>Github</span>
+        </button>
       </div>
     </aside>
   );

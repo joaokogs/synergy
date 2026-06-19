@@ -1,6 +1,6 @@
 "use client";
 
-import { Swords, Search, Upload, Download } from "lucide-react";
+import { Upload, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,14 +13,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { useTeam } from "@/hooks/use-team";
 import { ThemeToggle } from "@/components/theme-toggle";
-import type { ViewType } from "@/components/layout/sidebar";
 
-interface TopBarProps {
-  activeView: ViewType;
-  onNavigate: (view: ViewType) => void;
-}
-
-export function TopBar({ activeView, onNavigate }: TopBarProps) {
+export function TopBar() {
   const [importOpen, setImportOpen] = useState(false);
   const [paste, setPaste] = useState("");
   const { team } = useTeam();
@@ -61,48 +55,7 @@ export function TopBar({ activeView, onNavigate }: TopBarProps) {
   };
 
   return (
-    <header className="flex items-center justify-between border-b border-pk-border bg-pk-card-bg px-6 py-3">
-      <div className="flex items-center gap-8">
-        <div className="flex items-center gap-2">
-          <Swords className="h-5 w-5 text-pk-text-primary" />
-          <span className="text-sm font-black tracking-tight text-pk-text-primary">
-            PKMN BUILDER
-          </span>
-        </div>
-
-        <nav className="hidden items-center gap-6 sm:flex">
-          <button
-            type="button"
-            onClick={() => onNavigate("team")}
-            className={`text-sm font-medium transition-colors ${
-              activeView === "team"
-                ? "text-pk-text-primary"
-                : "text-pk-text-secondary hover:text-pk-text-primary"
-            }`}
-          >
-            Dashboard
-          </button>
-          <button
-            type="button"
-            onClick={() => onNavigate("editor")}
-            className={`text-sm font-medium transition-colors ${
-              activeView === "editor"
-                ? "text-pk-text-primary"
-                : "text-pk-text-secondary hover:text-pk-text-primary"
-            }`}
-          >
-            Editor
-          </button>
-          <button
-            type="button"
-            className="text-sm font-medium text-pk-text-secondary transition-colors hover:text-pk-text-primary"
-          >
-            <Search className="mr-1 inline h-3.5 w-3.5" />
-            Search
-          </button>
-        </nav>
-      </div>
-
+    <header className="flex items-center justify-end border-b border-pk-border bg-pk-card-bg px-6 py-3">
       <div className="flex items-center gap-2">
         <ThemeToggle />
         <Dialog open={importOpen} onOpenChange={setImportOpen}>
