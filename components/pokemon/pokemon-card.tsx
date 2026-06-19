@@ -47,11 +47,8 @@ function CardMoveBadge({ moveName }: { moveName: string | null }) {
     };
   }, []);
 
-  if (!moveName) return null;
-
   const moveType = (move?.type ?? "normal") as PokemonType;
   const typeColor = TYPE_COLORS[moveType] ?? "#A8A77A";
-  const displayName = move?.displayName ?? moveName.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 
   const handleMouseEnter = () => {
     clearTimeout(hideTimer.current);
@@ -63,6 +60,17 @@ function CardMoveBadge({ moveName }: { moveName: string | null }) {
     hideTimer.current = setTimeout(() => setOpen(false), 200);
   };
 
+  if (!moveName) {
+    return (
+      <div className="flex items-center gap-2 border border-pk-border bg-pk-muted-bg px-3 py-2">
+        <span className="w-3 shrink-0 text-[10px] font-bold text-pk-text-secondary opacity-30">—</span>
+        <span className="flex-1 text-xs text-pk-text-secondary opacity-50">Move</span>
+      </div>
+    );
+  }
+
+  const displayName = move?.displayName ?? moveName.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger
@@ -71,11 +79,11 @@ function CardMoveBadge({ moveName }: { moveName: string | null }) {
         onMouseLeave={handleMouseLeave}
       >
         <div
-          className="flex items-center rounded px-2.5 py-1.5 text-[11px] font-medium w-full"
-          style={{ backgroundColor: `${typeColor}15` }}
+          className="relative flex items-center justify-center border border-pk-border bg-pk-muted-bg px-3 py-2"
+          style={{ borderLeftColor: typeColor, borderLeftWidth: 3 }}
         >
-          <TypeIcon type={moveType} size={12} className="shrink-0" />
-          <span className="flex-1 truncate text-center text-pk-text-primary font-semibold leading-tight">
+          <TypeIcon type={moveType} size={14} className="absolute left-2 shrink-0" />
+          <span className="truncate text-xs font-semibold text-pk-text-primary">
             {displayName}
           </span>
         </div>
