@@ -20,7 +20,7 @@ export function TeamGrid({ onEdit }: TeamGridProps) {
 
   const handleAddPokemon = async (pokemon: PokemonBase) => {
     if (addingSlot !== null) {
-      addPokemon(addingSlot, pokemon);
+      addPokemon(pokemon);
       setAddingSlot(null);
     }
   };

@@ -20,7 +20,9 @@ function defaultEvs(): Record<PokemonStat, number> {
 
 interface TeamState {
   team: Team;
-  addPokemon: (slot: number, pokemon: PokemonBase) => void;
+  activeSlot: number;
+  setActiveSlot: (slot: number) => void;
+  addPokemon: (pokemon: PokemonBase) => void;
   removePokemon: (slot: number) => void;
   updatePokemon: (slot: number, updates: Partial<TeamPokemon>) => void;
   updateEvs: (slot: number, evs: Partial<Record<PokemonStat, number>>) => void;
@@ -34,11 +36,17 @@ export const useTeamStore = create<TeamState>()(
   persist(
     (set) => ({
       team: defaultTeam(),
+      activeSlot: 1,
 
-      addPokemon: (slot, pokemon) =>
+      setActiveSlot: (slot) => set({ activeSlot: slot }),
+
+      addPokemon: (pokemon) =>
         set((state) => {
           const members = [...state.team.members];
-          members[slot - 1] = {
+          const emptyIndex = members.findIndex((m) => m === null);
+          if (emptyIndex === -1) return state;
+          const slot = emptyIndex + 1;
+          members[emptyIndex] = {
             slot,
             pokemon,
             item: null,
@@ -54,9 +62,17 @@ export const useTeamStore = create<TeamState>()(
 
       removePokemon: (slot) =>
         set((state) => {
-          const members = [...state.team.members];
+          let members = [...state.team.members];
           members[slot - 1] = null;
-          return { team: { ...state.team, members } };
+          const filled = members.filter((m): m is TeamPokemon => m !== null);
+          const compacted: (TeamPokemon | null)[] = filled.map((m, i) => ({
+            ...m,
+            slot: i + 1,
+          }));
+          while (compacted.length < 6) {
+            compacted.push(null);
+          }
+          return { team: { ...state.team, members: compacted } };
         }),
 
       updatePokemon: (slot, updates) =>

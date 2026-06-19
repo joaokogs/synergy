@@ -23,6 +23,7 @@ interface FullPageEditorProps {
   onUpdateEvs: (evs: Partial<Record<PokemonStat, number>>) => void;
   onUpdateIvs: (ivs: Partial<Record<PokemonStat, number>>) => void;
   onUpdateMoves: (moves: (string | null)[]) => void;
+  hideHeader?: boolean;
 }
 
 const STAT_ORDER: PokemonStat[] = ["hp", "atk", "def", "spa", "spd", "spe"];
@@ -48,6 +49,7 @@ export function FullPageEditor({
   onUpdateEvs,
   onUpdateIvs,
   onUpdateMoves,
+  hideHeader = false,
 }: FullPageEditorProps) {
   const { pokemon, ability, item, teraType, moves, ivs, evs, nature } = member;
 
@@ -71,7 +73,7 @@ export function FullPageEditor({
 
   return (
     <div className="flex flex-1 flex-col">
-      {/* Top bar com breadcrumb */}
+      {!hideHeader && (
       <div className="flex items-center justify-between border-b border-pk-border bg-pk-card-bg px-6 py-3">
         <div className="flex items-center gap-3">
           <button
@@ -86,10 +88,11 @@ export function FullPageEditor({
             Edit {pokemon.displayName}
           </h1>
         </div>
-        <span className="text-xs font-mono text-pk-text-secondary">
-          #{String(pokemon.id).padStart(3, "0")}
-        </span>
-      </div>
+          <span className="text-xs font-mono text-pk-text-secondary">
+            #{String(pokemon.id).padStart(3, "0")}
+          </span>
+        </div>
+      )}
 
       {/* 3-column editor */}
       <div className="flex flex-1 gap-4 overflow-hidden p-4">
