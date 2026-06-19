@@ -175,6 +175,7 @@ export function PokemonEditor({
                 baseStats={pokemon.baseStats}
                 ivs={ivs}
                 evs={evs}
+                nature={nature}
               />
             </div>
           </TabsContent>

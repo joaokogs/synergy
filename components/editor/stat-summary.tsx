@@ -1,15 +1,14 @@
 import type { PokemonStat } from "@/types/pokemon";
-import { calculateStat, getStatName } from "@/lib/stat-calculator";
+import { calculateStat, getStatName, STAT_ORDER } from "@/lib/stat-calculator";
 
 interface StatSummaryProps {
   baseStats: Record<PokemonStat, number>;
   ivs: Record<PokemonStat, number>;
   evs: Record<PokemonStat, number>;
+  nature?: string | null;
 }
 
-const STAT_ORDER: PokemonStat[] = ["hp", "atk", "def", "spa", "spd", "spe"];
-
-export function StatSummary({ baseStats, ivs, evs }: StatSummaryProps) {
+export function StatSummary({ baseStats, ivs, evs, nature = null }: StatSummaryProps) {
   return (
     <div className="space-y-2">
       <p className="text-xs font-bold uppercase tracking-wider text-pk-text-secondary">
@@ -17,13 +16,13 @@ export function StatSummary({ baseStats, ivs, evs }: StatSummaryProps) {
       </p>
       <div className="space-y-1">
         {STAT_ORDER.map((stat) => {
-          const isHp = stat === "hp";
           const calculated = calculateStat(
             baseStats[stat],
             ivs[stat],
             evs[stat],
+            stat,
             50,
-            isHp
+            nature
           );
           return (
             <div
