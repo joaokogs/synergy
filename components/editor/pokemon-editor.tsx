@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PokemonSprite } from "@/components/pokemon/pokemon-sprite";
 import { TypeBadge } from "@/components/pokemon/type-badge";
 import { MovesetEditor } from "./moveset-editor";
+import { NatureSelector } from "./nature-selector";
 import { EvEditor } from "./ev-editor";
 import { IvEditor } from "./iv-editor";
 import { StatSummary } from "./stat-summary";
@@ -22,14 +23,6 @@ interface PokemonEditorProps {
   onUpdateIvs: (ivs: Partial<Record<PokemonStat, number>>) => void;
   onUpdateMoves: (moves: (string | null)[]) => void;
 }
-
-const NATURES = [
-  "Hardy", "Lonely", "Brave", "Adamant", "Naughty",
-  "Bold", "Docile", "Relaxed", "Impish", "Lax",
-  "Timid", "Hasty", "Serious", "Jolly", "Naive",
-  "Modest", "Mild", "Quiet", "Bashful", "Rash",
-  "Calm", "Gentle", "Sassy", "Careful", "Quirky",
-];
 
 const TERA_TYPES: PokemonType[] = [
   "normal", "fire", "water", "electric", "grass", "ice",
@@ -151,21 +144,10 @@ export function PokemonEditor({
                 <label className="text-xs font-bold uppercase tracking-wider text-pk-text-secondary">
                   Nature
                 </label>
-                <Select
-                  value={nature ?? ""}
-                  onValueChange={(v) => onUpdate({ nature: v || null })}
-                >
-                  <SelectTrigger className="h-10 text-sm">
-                    <SelectValue placeholder="Select nature" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {NATURES.map((n) => (
-                      <SelectItem key={n} value={n} className="text-sm">
-                        {n}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <NatureSelector
+                  value={nature}
+                  onChange={(v) => onUpdate({ nature: v })}
+                />
               </div>
             </div>
             </div>

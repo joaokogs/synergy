@@ -6,6 +6,7 @@ import { TypeBadge } from "@/components/pokemon/type-badge";
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ItemSelector } from "./item-selector";
+import { NatureSelector } from "./nature-selector";
 import { MovesetEditor } from "./moveset-editor";
 import { UnifiedStats } from "./unified-stats";
 
@@ -20,14 +21,6 @@ interface FullPageEditorProps {
   onUpdateMoves: (moves: (string | null)[]) => void;
   hideHeader?: boolean;
 }
-
-const NATURES = [
-  "Hardy", "Lonely", "Brave", "Adamant", "Naughty",
-  "Bold", "Docile", "Relaxed", "Impish", "Lax",
-  "Timid", "Hasty", "Serious", "Jolly", "Naive",
-  "Modest", "Mild", "Quiet", "Bashful", "Rash",
-  "Calm", "Gentle", "Sassy", "Careful", "Quirky",
-];
 
 const TERA_TYPES: PokemonType[] = [
   "normal", "fire", "water", "electric", "grass", "ice",
@@ -101,21 +94,10 @@ export function FullPageEditor({
                 <label className="text-[10px] font-bold uppercase tracking-widest text-pk-text-secondary">
                   Nature
                 </label>
-                <Select
-                  value={nature ?? ""}
-                  onValueChange={(v) => onUpdate({ nature: v || null })}
-                >
-                  <SelectTrigger className="h-8 text-xs">
-                    <SelectValue placeholder="Select nature" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {NATURES.map((n) => (
-                      <SelectItem key={n} value={n} className="text-xs">
-                        {n}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <NatureSelector
+                  value={nature}
+                  onChange={(v) => onUpdate({ nature: v })}
+                />
               </div>
               <div className="w-16 space-y-1">
                 <label className="text-[10px] font-bold uppercase tracking-widest text-pk-text-secondary">
