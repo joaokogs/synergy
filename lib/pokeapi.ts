@@ -101,13 +101,65 @@ export interface ItemInfo {
   displayName: string;
 }
 
-interface ItemDetail {
+export interface ItemDetail {
   name: string;
   displayName: string;
   effect: string | null;
 }
 
 const ITEMS_BASE = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items";
+
+const BATTLE_CATEGORIES = [
+  "held-items",
+  "choice",
+  "berries",
+  "effort-drop",
+  "in-a-pinch",
+  "picky-healing",
+  "type-protection",
+  "type-enhancement",
+  "species-specific",
+  "training",
+  "bad-held-items",
+  "jewels",
+  "mega-stones",
+  "plates",
+];
+
+let battleItemsCache: ItemInfo[] | null = null;
+
+export async function getBattleItems(): Promise<ItemInfo[]> {
+  if (battleItemsCache) return battleItemsCache;
+
+  const seen = new Set<string>();
+  const items: ItemInfo[] = [];
+
+  const results = await Promise.allSettled(
+    BATTLE_CATEGORIES.map((cat) =>
+      fetchWithCache<{ name: string; items: { name: string }[] }>(
+        `${POKEAPI_BASE}/item-category/${cat}`
+      )
+    )
+  );
+
+  for (const result of results) {
+    if (result.status !== "fulfilled") continue;
+    for (const item of result.value.items) {
+      if (item.name === "???" || item.name.startsWith("x-")) continue;
+      if (seen.has(item.name)) continue;
+      seen.add(item.name);
+      items.push({
+        name: item.name,
+        displayName: item.name
+          .replace(/-/g, " ")
+          .replace(/\b\w/g, (c) => c.toUpperCase()),
+      });
+    }
+  }
+
+  battleItemsCache = items;
+  return items;
+}
 
 let itemListCache: ItemInfo[] | null = null;
 

@@ -56,6 +56,7 @@ export const useTeamStore = create<TeamState>()(
             ivs: defaultIvs(),
             evs: defaultEvs(),
             nature: null,
+            level: 50,
           };
           return { team: { ...state.team, members } };
         }),

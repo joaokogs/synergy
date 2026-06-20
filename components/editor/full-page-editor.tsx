@@ -4,13 +4,13 @@ import { ArrowLeft } from "lucide-react";
 import { PokemonSprite } from "@/components/pokemon/pokemon-sprite";
 import { TypeBadge } from "@/components/pokemon/type-badge";
 
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ItemSelector } from "./item-selector";
 import { NatureSelector } from "./nature-selector";
+import { AbilitySelector } from "./ability-selector";
 import { MovesetEditor } from "./moveset-editor";
 import { UnifiedStats } from "./unified-stats";
 
-import type { TeamPokemon, PokemonStat, PokemonType } from "@/types/pokemon";
+import type { TeamPokemon, PokemonStat } from "@/types/pokemon";
 
 interface FullPageEditorProps {
   member: TeamPokemon;
@@ -22,11 +22,7 @@ interface FullPageEditorProps {
   hideHeader?: boolean;
 }
 
-const TERA_TYPES: PokemonType[] = [
-  "normal", "fire", "water", "electric", "grass", "ice",
-  "fighting", "poison", "ground", "flying", "psychic", "bug",
-  "rock", "ghost", "dragon", "dark", "steel", "fairy",
-];
+
 
 export function FullPageEditor({
   member,
@@ -37,7 +33,7 @@ export function FullPageEditor({
   onUpdateMoves,
   hideHeader = false,
 }: FullPageEditorProps) {
-  const { pokemon, ability, item, teraType, moves, ivs, evs, nature } = member;
+  const { pokemon, ability, item, moves, ivs, evs, nature, level = 50 } = member;
 
   return (
     <div className="flex flex-1 flex-col">
@@ -103,14 +99,23 @@ export function FullPageEditor({
                 <label className="text-[10px] font-bold uppercase tracking-widest text-pk-text-secondary">
                   Level
                 </label>
-                <div className="flex h-8 items-center justify-center border border-pk-border bg-pk-muted-bg text-xs font-mono font-bold text-pk-text-primary">
-                  50
-                </div>
+                <input
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={level}
+                  onChange={(e) => {
+                    const v = Math.max(1, Math.min(100, parseInt(e.target.value) || 1));
+                    onUpdate({ level: v });
+                  }}
+                  aria-label="Pokémon level"
+                  className="flex h-8 w-full items-center justify-center border border-pk-border bg-pk-muted-bg text-center text-xs font-mono font-bold text-pk-text-primary outline-none focus:ring-1 focus:ring-pk-text-primary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                />
               </div>
             </div>
           </div>
 
-          {/* Item / Ability / Tera */}
+          {/* Item / Ability */}
           <div className="space-y-3 border border-pk-border bg-pk-card-bg p-4">
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-widest text-pk-text-secondary">
@@ -125,43 +130,11 @@ export function FullPageEditor({
               <label className="text-[10px] font-bold uppercase tracking-widest text-pk-text-secondary">
                 Ability
               </label>
-              <Select
-                value={ability ?? ""}
-                onValueChange={(v) => onUpdate({ ability: v || null })}
-              >
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder="Select ability" />
-                </SelectTrigger>
-                <SelectContent>
-                  {pokemon.abilities.map((a) => (
-                    <SelectItem key={a} value={a} className="text-xs">
-                      {a.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-pk-text-secondary">
-                Tera Type
-              </label>
-              <Select
-                value={teraType ?? ""}
-                onValueChange={(v) =>
-                  onUpdate({ teraType: (v || null) as PokemonType | null })
-                }
-              >
-                <SelectTrigger className="h-8 text-xs">
-                  <SelectValue placeholder="Select tera type" />
-                </SelectTrigger>
-                <SelectContent>
-                  {TERA_TYPES.map((t) => (
-                    <SelectItem key={t} value={t} className="text-xs">
-                      {t.charAt(0).toUpperCase() + t.slice(1)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <AbilitySelector
+                abilities={pokemon.abilities}
+                value={ability}
+                onChange={(v) => onUpdate({ ability: v })}
+              />
             </div>
           </div>
         </div>
@@ -173,6 +146,7 @@ export function FullPageEditor({
             ivs={ivs}
             evs={evs}
             nature={nature}
+            level={level}
             onUpdateIvs={onUpdateIvs}
             onUpdateEvs={onUpdateEvs}
           />

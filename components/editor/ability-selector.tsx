@@ -3,46 +3,51 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { Search, X, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getBattleItems, getItemSpriteUrl, getItemData, type ItemInfo, type ItemDetail } from "@/lib/pokeapi";
+import { getAbilityData } from "@/lib/pokeapi";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
-interface ItemSelectorProps {
+interface AbilitySelectorProps {
+  abilities: string[];
   value: string | null;
-  onChange: (item: string | null) => void;
+  onChange: (ability: string | null) => void;
 }
 
-function ItemOption({
-  item,
+interface AbilityInfo {
+  name: string;
+  displayName: string;
+  effect: string | null;
+}
+
+function formatAbilityName(name: string): string {
+  return name.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+function AbilityOption({
+  name,
   isSelected,
   onClick,
 }: {
-  item: ItemInfo;
+  name: string;
   isSelected: boolean;
   onClick: () => void;
 }) {
-  const [detail, setDetail] = useState<ItemDetail | null>(null);
+  const [info, setInfo] = useState<AbilityInfo | null>(null);
 
   useEffect(() => {
     let cancelled = false;
-    getItemData(item.name).then((data) => {
-      if (!cancelled && data) setDetail(data);
+    getAbilityData(name).then((data) => {
+      if (!cancelled && data) setInfo(data);
     });
     return () => { cancelled = true; };
-  }, [item.name]);
+  }, [name]);
+
+  const displayName = formatAbilityName(name);
 
   const content = (
-    <>
-      <img
-        src={getItemSpriteUrl(item.name)}
-        alt=""
-        className="h-5 w-5 shrink-0 object-contain"
-        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-      />
-      <span className="text-pk-text-primary">{item.displayName}</span>
-    </>
+    <span className="text-pk-text-primary">{displayName}</span>
   );
 
-  if (!detail) {
+  if (!info) {
     return (
       <button
         type="button"
@@ -85,27 +90,21 @@ function ItemOption({
         className="w-72 [&[data-slot=popover-content]]:rounded-none"
       >
         <div className="flex items-center gap-2 border-b border-border pb-2">
-          <img src={getItemSpriteUrl(detail.name)} alt="" className="h-6 w-6 object-contain" />
-          <p className="text-sm font-bold text-foreground">{detail.displayName}</p>
+          <p className="text-sm font-bold text-foreground">{info.displayName}</p>
         </div>
-        {detail.effect && (
-          <p className="pt-2 text-xs leading-relaxed text-muted-foreground">{detail.effect}</p>
+        {info.effect && (
+          <p className="pt-2 text-xs leading-relaxed text-muted-foreground">{info.effect}</p>
         )}
       </PopoverContent>
     </Popover>
   );
 }
 
-export function ItemSelector({ value, onChange }: ItemSelectorProps) {
+export function AbilitySelector({ abilities, value, onChange }: AbilitySelectorProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [items, setItems] = useState<ItemInfo[]>([]);
-  const [detail, setDetail] = useState<ItemDetail | null>(null);
+  const [info, setInfo] = useState<AbilityInfo | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    getBattleItems().then(setItems).catch(console.error);
-  }, []);
 
   useEffect(() => {
     if (open) {
@@ -115,19 +114,17 @@ export function ItemSelector({ value, onChange }: ItemSelectorProps) {
 
   useEffect(() => {
     if (value) {
-      getItemData(value).then(setDetail);
+      getAbilityData(value).then(setInfo);
     } else {
-      setDetail(null);
+      setInfo(null);
     }
   }, [value]);
 
   const filtered = useMemo(() => {
-    if (!query.trim()) return items.slice(0, 50);
+    if (!query.trim()) return abilities;
     const q = query.toLowerCase().trim();
-    return items
-      .filter((item) => item.name.includes(q) || item.displayName.toLowerCase().includes(q))
-      .slice(0, 50);
-  }, [query, items]);
+    return abilities.filter((a) => a.toLowerCase().includes(q));
+  }, [query, abilities]);
 
   const handleOpenChange = (isOpen: boolean) => {
     if (!isOpen) setQuery("");
@@ -138,13 +135,6 @@ export function ItemSelector({ value, onChange }: ItemSelectorProps) {
     onChange(null);
     setOpen(false);
   };
-
-  const selectedItem = value
-    ? items.find((i) => i.name === value) ?? {
-        name: value,
-        displayName: value.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
-      }
-    : null;
 
   const triggerContent = (
     <div className="flex flex-1">
@@ -157,22 +147,9 @@ export function ItemSelector({ value, onChange }: ItemSelectorProps) {
           value && "border-r-0"
         )}
       >
-        {selectedItem ? (
-          <>
-            <img
-              src={getItemSpriteUrl(selectedItem.name)}
-              alt=""
-              className="h-5 w-5 object-contain"
-              onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-            />
-            <span className="font-medium">{selectedItem.displayName}</span>
-          </>
-        ) : (
-          <>
-            <Search className="h-3.5 w-3.5" />
-            <span>Item</span>
-          </>
-        )}
+        <span className={value ? "font-medium" : ""}>
+          {value ? formatAbilityName(value) : "Ability"}
+        </span>
         <ChevronDown className="ml-auto h-3.5 w-3.5 shrink-0" />
       </PopoverTrigger>
       {value && (
@@ -180,7 +157,7 @@ export function ItemSelector({ value, onChange }: ItemSelectorProps) {
           type="button"
           onClick={handleClear}
           className="flex h-8 w-8 shrink-0 items-center justify-center border border-pk-border bg-pk-card-bg text-pk-text-secondary transition-colors hover:text-red-500"
-          aria-label="Remove item"
+          aria-label="Clear ability"
         >
           <X className="h-3.5 w-3.5" />
         </button>
@@ -190,7 +167,7 @@ export function ItemSelector({ value, onChange }: ItemSelectorProps) {
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
-      {value && detail ? (
+      {value && info ? (
         <Popover>
           <PopoverTrigger render={triggerContent} nativeButton={false} openOnHover delay={300} closeDelay={200} />
           <PopoverContent
@@ -200,11 +177,10 @@ export function ItemSelector({ value, onChange }: ItemSelectorProps) {
             className="w-72 [&[data-slot=popover-content]]:rounded-none"
           >
             <div className="flex items-center gap-2 border-b border-border pb-2">
-              <img src={getItemSpriteUrl(detail.name)} alt="" className="h-6 w-6 object-contain" />
-              <p className="text-sm font-bold text-foreground">{detail.displayName}</p>
+              <p className="text-sm font-bold text-foreground">{info.displayName}</p>
             </div>
-            {detail.effect && (
-              <p className="pt-2 text-xs leading-relaxed text-muted-foreground">{detail.effect}</p>
+            {info.effect && (
+              <p className="pt-2 text-xs leading-relaxed text-muted-foreground">{info.effect}</p>
             )}
           </PopoverContent>
         </Popover>
@@ -221,24 +197,24 @@ export function ItemSelector({ value, onChange }: ItemSelectorProps) {
           <Search className="mr-2 h-3.5 w-3.5 shrink-0 text-pk-text-secondary" />
           <input
             ref={inputRef}
-            placeholder="Search item..."
+            placeholder="Search ability..."
             className="h-9 w-full bg-transparent text-sm outline-none placeholder:text-pk-text-secondary"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />
         </div>
         <div className="max-h-[220px] overflow-y-auto">
-          {filtered.map((item) => (
-            <ItemOption
-              key={item.name}
-              item={item}
-              isSelected={value === item.name}
-              onClick={() => { onChange(item.name); setOpen(false); }}
+          {filtered.map((ability) => (
+            <AbilityOption
+              key={ability}
+              name={ability}
+              isSelected={value === ability}
+              onClick={() => { onChange(ability); setOpen(false); }}
             />
           ))}
           {filtered.length === 0 && (
             <div className="p-3 text-center text-sm text-pk-text-secondary">
-              No items found
+              No abilities found
             </div>
           )}
         </div>

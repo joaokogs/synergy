@@ -90,8 +90,7 @@ export function calculateAllStats(
   return result;
 }
 
-export function getMaxPossibleStat(base: number, isHp: boolean): number {
-  const level = 50;
+export function getMaxPossibleStat(base: number, isHp: boolean, level: number = 50): number {
   const evComponent = 63;
   if (isHp) {
     return Math.floor(((2 * base + 31 + evComponent) * level) / 100 + level + 10);

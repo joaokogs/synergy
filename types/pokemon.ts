@@ -41,6 +41,7 @@ export interface TeamPokemon {
   ivs: Record<PokemonStat, number>;
   evs: Record<PokemonStat, number>;
   nature: string | null;
+  level: number;
 }
 
 export interface Team {

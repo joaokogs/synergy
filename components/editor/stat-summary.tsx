@@ -6,13 +6,14 @@ interface StatSummaryProps {
   ivs: Record<PokemonStat, number>;
   evs: Record<PokemonStat, number>;
   nature?: string | null;
+  level?: number;
 }
 
-export function StatSummary({ baseStats, ivs, evs, nature = null }: StatSummaryProps) {
+export function StatSummary({ baseStats, ivs, evs, nature = null, level = 50 }: StatSummaryProps) {
   return (
     <div className="space-y-2">
       <p className="text-xs font-bold uppercase tracking-wider text-pk-text-secondary">
-        Stats at Lv. 50
+        Stats at Lv. {level}
       </p>
       <div className="space-y-1">
         {STAT_ORDER.map((stat) => {
@@ -21,7 +22,7 @@ export function StatSummary({ baseStats, ivs, evs, nature = null }: StatSummaryP
             ivs[stat],
             evs[stat],
             stat,
-            50,
+            level,
             nature
           );
           return (

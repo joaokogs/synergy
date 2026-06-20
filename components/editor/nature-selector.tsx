@@ -56,7 +56,7 @@ export function NatureSelector({ value, onChange }: NatureSelectorProps) {
       <div className="flex">
         <PopoverTrigger
           className={cn(
-            "flex h-9 flex-1 items-center gap-2 border px-3 text-sm transition-colors",
+            "flex h-8 flex-1 items-center gap-2 border px-3 text-sm transition-colors",
             value
               ? "border-pk-border bg-pk-card-bg text-pk-text-primary"
               : "border-dashed border-pk-border bg-pk-card-bg text-pk-text-secondary hover:border-pk-text-primary",
@@ -72,7 +72,7 @@ export function NatureSelector({ value, onChange }: NatureSelectorProps) {
           <button
             type="button"
             onClick={handleClear}
-            className="flex h-9 w-9 shrink-0 items-center justify-center border border-pk-border bg-pk-card-bg text-pk-text-secondary transition-colors hover:text-red-500"
+            className="flex h-8 w-8 shrink-0 items-center justify-center border border-pk-border bg-pk-card-bg text-pk-text-secondary transition-colors hover:text-red-500"
             aria-label="Clear nature"
           >
             <X className="h-3.5 w-3.5" />

@@ -14,6 +14,7 @@ interface UnifiedStatsProps {
   ivs: Record<PokemonStat, number>;
   evs: Record<PokemonStat, number>;
   nature: string | null;
+  level?: number;
   onUpdateIvs: (ivs: Partial<Record<PokemonStat, number>>) => void;
   onUpdateEvs: (evs: Partial<Record<PokemonStat, number>>) => void;
 }
@@ -23,6 +24,7 @@ export function UnifiedStats({
   ivs,
   evs,
   nature,
+  level = 50,
   onUpdateIvs,
   onUpdateEvs,
 }: UnifiedStatsProps) {
@@ -65,7 +67,7 @@ export function UnifiedStats({
     <div className="border border-pk-border bg-pk-card-bg p-4">
       <div className="mb-3 flex items-center justify-between">
         <p className="text-[10px] font-bold uppercase tracking-widest text-pk-text-secondary">
-          Stats at Lv. 50
+          Stats at Lv. {level}
         </p>
         <div className="flex items-center gap-2">
           <span className="text-[10px] font-mono text-pk-text-secondary">
@@ -101,8 +103,8 @@ export function UnifiedStats({
 
       <div className="space-y-0.5">
         {STAT_ORDER.map((stat) => {
-          const finalStat = calculateStat(baseStats[stat], ivs[stat], evs[stat], stat, 50, nature);
-          const maxStat = getMaxPossibleStat(baseStats[stat], stat === "hp");
+          const finalStat = calculateStat(baseStats[stat], ivs[stat], evs[stat], stat, level, nature);
+          const maxStat = getMaxPossibleStat(baseStats[stat], stat === "hp", level);
           const barPercent = Math.min(100, (finalStat / maxStat) * 100);
           const natureEffect = getNatureEffect(nature, stat);
 

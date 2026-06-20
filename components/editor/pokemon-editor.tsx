@@ -8,6 +8,7 @@ import { PokemonSprite } from "@/components/pokemon/pokemon-sprite";
 import { TypeBadge } from "@/components/pokemon/type-badge";
 import { MovesetEditor } from "./moveset-editor";
 import { NatureSelector } from "./nature-selector";
+import { AbilitySelector } from "./ability-selector";
 import { EvEditor } from "./ev-editor";
 import { IvEditor } from "./iv-editor";
 import { StatSummary } from "./stat-summary";
@@ -40,7 +41,7 @@ export function PokemonEditor({
   onUpdateMoves,
 }: PokemonEditorProps) {
   const [activeTab, setActiveTab] = useState("overview");
-  const { pokemon, ability, item, teraType, moves, ivs, evs, nature } = member;
+  const { pokemon, ability, item, teraType, moves, ivs, evs, nature, level = 50 } = member;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -90,21 +91,11 @@ export function PokemonEditor({
                 <label className="text-xs font-bold uppercase tracking-wider text-pk-text-secondary">
                   Ability
                 </label>
-                <Select
-                  value={ability ?? ""}
-                  onValueChange={(v) => onUpdate({ ability: v || null })}
-                >
-                  <SelectTrigger className="h-10 text-sm">
-                    <SelectValue placeholder="Select ability" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {pokemon.abilities.map((a) => (
-                      <SelectItem key={a} value={a} className="text-sm">
-                        {a.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <AbilitySelector
+                abilities={pokemon.abilities}
+                value={ability}
+                onChange={(v) => onUpdate({ ability: v })}
+              />
               </div>
 
               <div className="space-y-1.5">
@@ -158,6 +149,7 @@ export function PokemonEditor({
                 ivs={ivs}
                 evs={evs}
                 nature={nature}
+                level={level}
               />
             </div>
           </TabsContent>
