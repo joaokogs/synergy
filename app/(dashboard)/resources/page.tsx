@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Swords, Plus } from "lucide-react";
+import { Swords, Plus, X } from "lucide-react";
 
 const CELL_CLASS: Record<string, string> = {
   "0": "bg-green-800 text-white",
@@ -77,6 +77,7 @@ function displayAbilityName(name: string): string {
 export default function AnalyticsPage() {
   const team = useTeamStore((s) => s.team);
   const addPokemon = useTeamStore((s) => s.addPokemon);
+  const removePokemon = useTeamStore((s) => s.removePokemon);
   const [searchOpen, setSearchOpen] = useState(false);
   const [abilityOverrides, setAbilityOverrides] = useState<Record<number, string>>({});
 
@@ -151,9 +152,17 @@ export default function AnalyticsPage() {
                 const showAbilities = abilities.length > 1 && hasAbilityEffect;
 
                 return (
-                  <div key={slot} className="flex flex-1 flex-col items-center gap-1 border-l border-pk-border py-1.5">
+                  <div key={slot} className="group relative flex flex-1 flex-col items-center gap-1 border-l border-pk-border py-1.5">
                     {member ? (
                       <>
+                        <button
+                          type="button"
+                          onClick={() => removePokemon(slot)}
+                          className="absolute right-0.5 top-0.5 z-10 text-pk-text-secondary/50 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-400"
+                          aria-label={`Remove ${member.displayName}`}
+                        >
+                          <X className="h-2.5 w-2.5" />
+                        </button>
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={member.spriteUrl} alt="" className="h-8 w-8 object-contain" />
                         {showAbilities && (

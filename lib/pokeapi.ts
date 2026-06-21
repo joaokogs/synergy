@@ -19,17 +19,29 @@ async function fetchWithCache<T>(url: string): Promise<T> {
 
 let pokemonListCache: PokemonListItem[] | null = null;
 
+const POKEMON_TYPES: PokemonType[] = [
+  "normal", "fire", "water", "electric", "grass", "ice",
+  "fighting", "poison", "ground", "flying", "psychic", "bug",
+  "rock", "ghost", "dragon", "dark", "steel", "fairy",
+];
+
+const HIDDEN_POWER_REGEX = /^hidden-power-(normal|fire|water|electric|grass|ice|fighting|poison|ground|flying|psychic|bug|rock|ghost|dragon|dark|steel|fairy)$/;
+
 export async function getPokemonList(): Promise<PokemonListItem[]> {
   if (pokemonListCache) return pokemonListCache;
 
   const data = await fetchWithCache<{
     results: { name: string; url: string }[];
-  }>(`${POKEAPI_BASE}/pokemon?limit=1025&offset=0`);
+  }>(`${POKEAPI_BASE}/pokemon?limit=9999&offset=0`);
 
-  pokemonListCache = data.results.map((r, i) => ({
-    name: r.name,
-    id: i + 1,
-  }));
+  pokemonListCache = data.results.map((r) => {
+    const urlParts = r.url.split("/").filter(Boolean);
+    const id = parseInt(urlParts.pop() || "0", 10);
+    return {
+      name: r.name,
+      id,
+    };
+  });
 
   return pokemonListCache;
 }
@@ -76,17 +88,24 @@ export async function getPokemonData(
     if (key) baseStats[key] = s.base_stat;
   }
 
+  const moves = data.moves.map((m) => m.move.name);
+
+  const hiddenPowerIndex = moves.indexOf("hidden-power");
+  if (hiddenPowerIndex !== -1) {
+    moves.splice(hiddenPowerIndex, 1, ...POKEMON_TYPES.map((t) => `hidden-power-${t}`));
+  }
+
   return {
     id: data.id,
     name: data.name,
-    displayName: data.name.charAt(0).toUpperCase() + data.name.slice(1),
+    displayName: data.name
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase()),
     types: data.types.map((t) => t.type.name as PokemonType),
     abilities: data.abilities.map((a) => a.ability.name),
-    moves: data.moves
-      .map((m) => m.move.name)
-      .slice(0, 100),
+    moves: moves.slice(0, 100),
     baseStats,
-    spriteUrl: `${SPRITE_BASE}/${data.id}.png`,
+    spriteUrl: data.sprites.other["official-artwork"].front_default ?? getPokemonSpriteUrl(data.id),
   };
 }
 
@@ -284,6 +303,24 @@ const moveCache = new Map<string, MoveInfo>();
 export async function getMoveData(moveName: string): Promise<MoveInfo | null> {
   const cached = moveCache.get(moveName);
   if (cached) return cached;
+
+  const hpMatch = moveName.match(HIDDEN_POWER_REGEX);
+  if (hpMatch) {
+    const hpType = hpMatch[1] as PokemonType;
+    const info: MoveInfo = {
+      name: moveName,
+      displayName: `Hidden Power ${hpType.charAt(0).toUpperCase() + hpType.slice(1)}`,
+      type: hpType,
+      category: "special",
+      power: 60,
+      accuracy: 100,
+      pp: 15,
+      ppMax: getMaxPp(15),
+      effect: `A unique attack that varies in type depending on the Pokémon's IVs. This Hidden Power is ${hpType} type.`,
+    };
+    moveCache.set(moveName, info);
+    return info;
+  }
 
   try {
     const data = await fetchWithCache<{
