@@ -1,16 +1,14 @@
 "use client";
 
-import { Swords, Users, Wrench, BookOpen, Settings, Code2 } from "lucide-react";
+import { Swords, Users, Wrench, BarChart3, Settings, Code2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 
-type ViewType = "team" | "editor" | "resources" | "settings";
-
 const navItems: { path: string; label: string; icon: typeof Users }[] = [
   { path: "/", label: "Teams", icon: Users },
   { path: "/builder", label: "Builder", icon: Wrench },
-  { path: "/resources", label: "Resources", icon: BookOpen },
+  { path: "/resources", label: "Analytics", icon: BarChart3 },
   { path: "/settings", label: "Settings", icon: Settings },
 ];
 
