@@ -74,10 +74,11 @@ export function Sidebar() {
       <div className="border-t border-pk-border px-4 py-4">
         <button
           type="button"
-          className="flex w-full items-center gap-4 rounded-md px-3 py-2 text-left text-sm font-bold text-pk-text-secondary transition-colors hover:text-pk-text-primary"
+          onClick={() => window.open("https://github.com/joaokogs/synergy", "_blank")}
+          className="flex w-full items-center gap-4 rounded-md px-3 py-2 text-left text-sm font-bold text-pk-text-secondary transition-colors hover:text-pk-text-primary cursor-pointer"
         >
           <Code2 className="h-4 w-4 shrink-0" />
-          <span>Github</span>
+          <span>GitHub</span>
         </button>
       </div>
     </aside>
