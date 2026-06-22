@@ -11,7 +11,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { getPokemonList, getPokemonData } from "@/lib/pokeapi";
+import { getPokemonList, getPokemonData, cleanPokemonName } from "@/lib/pokeapi";
 import type { PokemonBase, PokemonListItem } from "@/types/pokemon";
 
 interface PokemonSearchDialogProps {
@@ -103,7 +103,7 @@ export function PokemonSearchDialog({
                 />
                 <span className="text-base">
                   #{String(item.id).padStart(3, "0")}{" "}
-                  {item.name.charAt(0).toUpperCase() + item.name.slice(1)}
+                  {cleanPokemonName(item.name)}
                 </span>
               </CommandItem>
             ))}

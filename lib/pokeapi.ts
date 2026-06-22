@@ -1,6 +1,6 @@
 "use client";
 
-import type { PokemonBase, PokemonListItem, PokemonType } from "@/types/pokemon";
+import type { PokemonBase, PokemonListItem, PokemonType, PokemonForm } from "@/types/pokemon";
 
 const POKEAPI_BASE = "https://pokeapi.co/api/v2";
 const SPRITE_BASE =
@@ -17,15 +17,25 @@ async function fetchWithCache<T>(url: string): Promise<T> {
   return data;
 }
 
+function capitalize(name: string): string {
+  return name
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
+export function cleanPokemonName(name: string): string {
+  return capitalize(name.replace(/-(male|female)$/, ""));
+}
+
 let pokemonListCache: PokemonListItem[] | null = null;
 
 const POKEMON_TYPES: PokemonType[] = [
   "normal", "fire", "water", "electric", "grass", "ice",
   "fighting", "poison", "ground", "flying", "psychic", "bug",
-  "rock", "ghost", "dragon", "dark", "steel", "fairy",
+  "rock", "ghost", "dragon", "dark", "steel",
 ];
 
-const HIDDEN_POWER_REGEX = /^hidden-power-(normal|fire|water|electric|grass|ice|fighting|poison|ground|flying|psychic|bug|rock|ghost|dragon|dark|steel|fairy)$/;
+const HIDDEN_POWER_REGEX = /^hidden-power-(normal|fire|water|electric|grass|ice|fighting|poison|ground|flying|psychic|bug|rock|ghost|dragon|dark|steel)$/;
 
 export async function getPokemonList(): Promise<PokemonListItem[]> {
   if (pokemonListCache) return pokemonListCache;
@@ -53,13 +63,44 @@ interface PokeAPIPokemon {
   abilities: { ability: { name: string }; is_hidden: boolean }[];
   stats: { base_stat: number; stat: { name: string } }[];
   moves: { move: { name: string } }[];
+  forms: { name: string; url: string }[];
   sprites: {
+    front_default: string;
+    front_female: string | null;
     other: {
       "official-artwork": {
         front_default: string;
+        front_female?: string | null;
+      };
+      home?: {
+        front_default?: string | null;
+        front_female?: string | null;
       };
     };
   };
+}
+
+interface PokeAPIForm {
+  form_name: string;
+  form_names: { language: { name: string }; name: string }[];
+  is_default: boolean;
+  pokemon: { name: string; url: string };
+  sprites: {
+    front_default: string;
+    front_female: string | null;
+    back_default: string | null;
+    back_female: string | null;
+  };
+}
+
+interface PokeAPISpecies {
+  name: string;
+  gender_rate: number;
+  has_gender_differences: boolean;
+  varieties: {
+    is_default: boolean;
+    pokemon: { name: string; url: string };
+  }[];
 }
 
 export async function getPokemonData(
@@ -95,22 +136,118 @@ export async function getPokemonData(
     moves.splice(hiddenPowerIndex, 1, ...POKEMON_TYPES.map((t) => `hidden-power-${t}`));
   }
 
+  const spriteUrl =
+    data.sprites.other["official-artwork"].front_default ??
+    getPokemonSpriteUrl(data.id);
+
+  const spriteFemaleUrl =
+    data.sprites.other["official-artwork"].front_female ??
+    data.sprites.other.home?.front_female ??
+    data.sprites.front_female ??
+    undefined;
+
+  // Fetch species data for gender/forms and clean display name
+  let genderDifferences = false;
+  let genderRate = -1;
+  let forms: PokemonForm[] | undefined;
+  let speciesName: string | undefined;
+
+  try {
+    const species = await fetchWithCache<PokeAPISpecies>(
+      `https://pokeapi.co/api/v2/pokemon-species/${data.id}/`
+    );
+
+    speciesName = species.name;
+    genderRate = species.gender_rate;
+    genderDifferences = species.has_gender_differences && species.gender_rate !== -1;
+
+    const seenFormNames = new Set<string>();
+    const allForms: PokemonForm[] = [];
+
+    // 1. Process species.varieties (species-level alternate forms)
+    for (const v of species.varieties) {
+      if (v.is_default) continue;
+      if (species.has_gender_differences && v.pokemon.name.endsWith("-female")) continue;
+      const urlParts = v.pokemon.url.split("/").filter(Boolean);
+      const formId = parseInt(urlParts.pop() || "0", 10);
+      const formName = v.pokemon.name;
+      const baseName = speciesName ?? data.name;
+      const stripped = formName.startsWith(`${baseName}-`)
+        ? formName.slice(baseName.length + 1)
+        : formName;
+      seenFormNames.add(formName);
+      allForms.push({
+        name: formName,
+        displayName: capitalize(stripped.replace(/-/g, " ")),
+        spriteUrl: getPokemonFormSpriteUrl(formId),
+        id: formId,
+      });
+    }
+
+    // 2. Process data.forms (cosmetic forms like Gastrodon, Vivillon)
+    const currentPokemonId = data.id;
+    for (const f of data.forms) {
+      if (f.name === data.name) continue;
+      if (seenFormNames.has(f.name)) continue;
+      if (species.has_gender_differences && f.name.endsWith("-female")) continue;
+      try {
+        const formDetail = await fetchWithCache<PokeAPIForm>(f.url);
+        const formSpriteUrl = formDetail.sprites.front_default ?? getPokemonSpriteUrl(currentPokemonId);
+        const englishName = formDetail.form_names.find(
+          (n) => n.language.name === "en"
+        );
+      allForms.push({
+        name: f.name,
+        displayName: englishName?.name ?? capitalize(formDetail.form_name),
+        spriteUrl: formSpriteUrl,
+        id: currentPokemonId,
+        cosmetic: true,
+      });
+        seenFormNames.add(f.name);
+      } catch {
+        // form fetch failed silently
+      }
+    }
+
+    if (allForms.length > 0) forms = allForms;
+  } catch {
+    // species fetch failed silently
+  }
+
   return {
     id: data.id,
     name: data.name,
-    displayName: data.name
-      .replace(/-/g, " ")
-      .replace(/\b\w/g, (c) => c.toUpperCase()),
+    displayName: capitalize(speciesName ?? data.name),
     types: data.types.map((t) => t.type.name as PokemonType),
     abilities: data.abilities.map((a) => a.ability.name),
     moves: moves.slice(0, 100),
     baseStats,
-    spriteUrl: data.sprites.other["official-artwork"].front_default ?? getPokemonSpriteUrl(data.id),
+    spriteUrl,
+    spriteFemaleUrl,
+    speciesUrl: `https://pokeapi.co/api/v2/pokemon-species/${data.id}/`,
+    genderDifferences,
+    genderRate,
+    forms,
   };
 }
 
 export function getPokemonSpriteUrl(id: number): string {
   return `${SPRITE_BASE}/${id}.png`;
+}
+
+export function getPokemonFormSpriteUrl(
+  id: number,
+  gender?: "male" | "female",
+  femaleSpriteUrl?: string
+): string {
+  if (gender === "female" && femaleSpriteUrl) {
+    return femaleSpriteUrl;
+  }
+  return `${SPRITE_BASE}/${id}.png`;
+}
+
+export async function getFormPokemonData(formName: string): Promise<PokemonBase> {
+  return getPokemonData(formName);
 }
 
 // ─── Items ───────────────────────────────────────────────

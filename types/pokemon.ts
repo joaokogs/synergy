@@ -20,6 +20,14 @@ export type PokemonType =
   | "steel"
   | "fairy";
 
+export interface PokemonForm {
+  name: string;
+  displayName: string;
+  spriteUrl: string;
+  id: number;
+  cosmetic?: boolean;
+}
+
 export interface PokemonBase {
   id: number;
   name: string;
@@ -29,6 +37,11 @@ export interface PokemonBase {
   moves: string[];
   baseStats: Record<PokemonStat, number>;
   spriteUrl: string;
+  spriteFemaleUrl?: string;
+  speciesUrl?: string;
+  genderDifferences?: boolean;
+  genderRate?: number;
+  forms?: PokemonForm[];
 }
 
 export interface TeamPokemon {
@@ -42,6 +55,8 @@ export interface TeamPokemon {
   evs: Record<PokemonStat, number>;
   nature: string | null;
   level: number;
+  gender?: "male" | "female";
+  activeForm?: PokemonForm | null;
 }
 
 export interface Team {

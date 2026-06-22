@@ -281,7 +281,12 @@ function AbilityHoverBadge({ abilityName }: { abilityName: string | null }) {
 }
 
 export function PokemonCard({ member, onEdit, onRemove }: PokemonCardProps) {
-  const { pokemon, ability, item, moves, evs } = member;
+  const { pokemon, ability, item, moves, evs, gender, activeForm } = member;
+  const displayName = pokemon.displayName;
+  const spriteUrl = activeForm?.spriteUrl
+    ?? (gender === "female" && pokemon.spriteFemaleUrl
+      ? pokemon.spriteFemaleUrl
+      : undefined);
 
   return (
     <div className="relative flex flex-col gap-2 border border-pk-border bg-pk-card-bg p-3 md:p-4">
@@ -302,6 +307,8 @@ export function PokemonCard({ member, onEdit, onRemove }: PokemonCardProps) {
         <PokemonSprite
           id={pokemon.id}
           size={56}
+          gender={gender}
+          spriteUrl={spriteUrl}
           className="shrink-0 rounded-lg border-2 border-pk-border shadow-sm"
         />
 
@@ -311,7 +318,7 @@ export function PokemonCard({ member, onEdit, onRemove }: PokemonCardProps) {
               #{String(pokemon.id).padStart(3, "0")}
             </span>
             <h3 className="text-base font-bold leading-tight text-pk-text-primary truncate">
-              {pokemon.displayName}
+              {displayName}
             </h3>
           </div>
 

@@ -1,6 +1,6 @@
 import type { PokemonType } from "@/types/pokemon";
 
-export const TYPE_COLORS: Record<PokemonType, string> = {
+export const TYPE_COLORS: Partial<Record<PokemonType, string>> = {
   normal: "#A8A77A",
   fire: "#EE8130",
   water: "#6390F0",
@@ -18,14 +18,13 @@ export const TYPE_COLORS: Record<PokemonType, string> = {
   dragon: "#6F35FC",
   dark: "#705746",
   steel: "#B7B7CE",
-  fairy: "#D685AD",
 };
 
 export function getTypeColor(type: PokemonType): string {
   return TYPE_COLORS[type] ?? "#A8A77A";
 }
 
-const TYPE_IDS: Record<PokemonType, number> = {
+const TYPE_IDS: Partial<Record<PokemonType, number>> = {
   normal: 1,
   fighting: 2,
   flying: 3,
@@ -43,7 +42,6 @@ const TYPE_IDS: Record<PokemonType, number> = {
   ice: 15,
   dragon: 16,
   dark: 17,
-  fairy: 18,
 };
 
 const TYPE_ICON_BASE =

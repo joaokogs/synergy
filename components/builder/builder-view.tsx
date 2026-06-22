@@ -28,6 +28,7 @@ export function BuilderView() {
     updateEvs,
     updateIvs,
     updateMoves,
+    switchForm,
   } = useTeam();
   const [addingSlot, setAddingSlot] = useState<number | null>(null);
   const [removingSlot, setRemovingSlot] = useState<number | null>(null);
@@ -106,6 +107,7 @@ export function BuilderView() {
             onUpdateEvs={(evs) => updateEvs(activeSlot, evs)}
             onUpdateIvs={(ivs) => updateIvs(activeSlot, ivs)}
             onUpdateMoves={(moves) => updateMoves(activeSlot, moves)}
+            onFormChange={(formName) => switchForm(activeSlot, formName)}
           />
         ) : (
           <div className="flex h-full items-center justify-center flex-col gap-4 text-pk-text-secondary">

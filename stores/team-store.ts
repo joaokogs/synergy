@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Team, TeamPokemon, PokemonBase, PokemonStat } from "@/types/pokemon";
+import { getFormPokemonData } from "@/lib/pokeapi";
 
 function defaultTeam(): Team {
   return {
@@ -30,6 +31,8 @@ interface TeamState {
   updateMoves: (slot: number, moves: (string | null)[]) => void;
   renameTeam: (name: string) => void;
   resetTeam: () => void;
+  updateGender: (slot: number, gender: "male" | "female") => void;
+  switchForm: (slot: number, formName: string) => Promise<void>;
 }
 
 export const useTeamStore = create<TeamState>()(
@@ -46,6 +49,10 @@ export const useTeamStore = create<TeamState>()(
           const emptyIndex = members.findIndex((m) => m === null);
           if (emptyIndex === -1) return state;
           const slot = emptyIndex + 1;
+          const defaultGender =
+            pokemon.genderRate !== undefined && pokemon.genderRate >= 0
+              ? ("male" as const)
+              : undefined;
           members[emptyIndex] = {
             slot,
             pokemon,
@@ -57,13 +64,14 @@ export const useTeamStore = create<TeamState>()(
             evs: defaultEvs(),
             nature: null,
             level: 50,
+            gender: defaultGender,
           };
           return { team: { ...state.team, members } };
         }),
 
       removePokemon: (slot) =>
         set((state) => {
-          let members = [...state.team.members];
+          const members = [...state.team.members];
           members[slot - 1] = null;
           const filled = members.filter((m): m is TeamPokemon => m !== null);
           const compacted: (TeamPokemon | null)[] = filled.map((m, i) => ({
@@ -123,6 +131,82 @@ export const useTeamStore = create<TeamState>()(
           return { team: { ...state.team, members } };
         }),
 
+      updateGender: (slot, gender) =>
+        set((state) => {
+          const members = [...state.team.members];
+          const member = members[slot - 1];
+          if (member) {
+            members[slot - 1] = { ...member, gender };
+          }
+          return { team: { ...state.team, members } };
+        }),
+
+      switchForm: async (slot, formName) => {
+        const state = useTeamStore.getState();
+        const member = state.team.members[slot - 1];
+        if (!member) return;
+
+        const targetForm = member.pokemon.forms?.find(
+          (f) => f.name === formName
+        );
+        if (!targetForm) return;
+
+        const defaultGender =
+          member.pokemon.genderRate !== undefined &&
+          member.pokemon.genderRate >= 0
+            ? ("male" as const)
+            : undefined;
+
+        // Cosmetic form: just update sprite/activeForm
+        if (targetForm.cosmetic) {
+          set({
+            team: {
+              ...state.team,
+              members: state.team.members.map((m, i) =>
+                i === slot - 1 && m
+                  ? { ...m, gender: defaultGender, activeForm: targetForm }
+                  : m
+              ),
+            },
+          });
+          return;
+        }
+
+        // Species-level form: re-fetch pokemon data
+        const formData = await getFormPokemonData(formName);
+        const currentState = useTeamStore.getState();
+        const currentMember = currentState.team.members[slot - 1];
+        if (!currentMember) return;
+
+        const formGender =
+          formData.genderRate !== undefined && formData.genderRate >= 0
+            ? ("male" as const)
+            : undefined;
+
+        set({
+          team: {
+            ...currentState.team,
+            members: currentState.team.members.map((m, i) =>
+              i === slot - 1 && m
+                ? {
+                    ...m,
+                    pokemon: formData,
+                    gender: formGender,
+                    activeForm: {
+                      name: formData.name,
+                      displayName: formData.displayName,
+                      spriteUrl: formData.spriteUrl,
+                      id: formData.id,
+                    },
+                    ability: formData.abilities[0] ?? null,
+                    teraType: formData.types[0] ?? null,
+                  }
+                : m
+            ),
+          },
+        });
+      },
+
       renameTeam: (name) =>
         set((state) => ({
           team: { ...state.team, name },
@@ -130,6 +214,6 @@ export const useTeamStore = create<TeamState>()(
 
       resetTeam: () => set({ team: defaultTeam() }),
     }),
-    { name: "poke-builder-team" }
+    { name: "synergy-team" }
   )
 );

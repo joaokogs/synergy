@@ -9,6 +9,7 @@ import { NatureSelector } from "./nature-selector";
 import { AbilitySelector } from "./ability-selector";
 import { MovesetEditor } from "./moveset-editor";
 import { UnifiedStats } from "./unified-stats";
+import { GenderFormSelector } from "./gender-form-selector";
 
 import type { TeamPokemon, PokemonStat } from "@/types/pokemon";
 
@@ -19,6 +20,7 @@ interface FullPageEditorProps {
   onUpdateEvs: (evs: Partial<Record<PokemonStat, number>>) => void;
   onUpdateIvs: (ivs: Partial<Record<PokemonStat, number>>) => void;
   onUpdateMoves: (moves: (string | null)[]) => void;
+  onFormChange?: (formName: string) => void;
   hideHeader?: boolean;
 }
 
@@ -31,9 +33,16 @@ export function FullPageEditor({
   onUpdateEvs,
   onUpdateIvs,
   onUpdateMoves,
+  onFormChange,
   hideHeader = false,
 }: FullPageEditorProps) {
-  const { pokemon, ability, item, moves, ivs, evs, nature, level = 50 } = member;
+  const { pokemon, ability, item, moves, ivs, evs, nature, level = 50, gender, activeForm } = member;
+
+  const displayName = pokemon.displayName;
+  const spriteUrl = activeForm?.spriteUrl
+    ?? (gender === "female" && pokemon.spriteFemaleUrl
+      ? pokemon.spriteFemaleUrl
+      : undefined);
 
   return (
     <div className="flex flex-1 flex-col">
@@ -49,7 +58,7 @@ export function FullPageEditor({
             <ArrowLeft className="h-4 w-4" />
           </button>
           <h1 className="text-lg font-bold tracking-tight text-pk-text-primary">
-            Edit {pokemon.displayName}
+            Edit {displayName}
           </h1>
         </div>
           <span className="text-xs font-mono text-pk-text-secondary">
@@ -68,11 +77,13 @@ export function FullPageEditor({
               <PokemonSprite
                 id={pokemon.id}
                 size={100}
+                gender={gender}
+                spriteUrl={spriteUrl}
                 className="rounded-lg border-2 border-pk-border shadow-sm"
               />
               <div className="text-center">
                 <h2 className="text-base font-bold text-pk-text-primary">
-                  {pokemon.displayName}
+                  {displayName}
                 </h2>
                 <div className="mt-0.5 flex justify-center gap-1">
                   {pokemon.types.map((t) => (
@@ -82,6 +93,15 @@ export function FullPageEditor({
               </div>
             </div>
           </div>
+
+          {/* Gender / Form */}
+          <GenderFormSelector
+            pokemon={pokemon}
+            gender={gender}
+            activeForm={activeForm}
+            onGenderChange={(g) => onUpdate({ gender: g })}
+            onFormChange={(formName) => onFormChange?.(formName)}
+          />
 
           {/* Nature & Level */}
           <div className="border border-pk-border bg-pk-card-bg p-4">

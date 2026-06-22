@@ -28,7 +28,7 @@ interface PokemonEditorProps {
 const TERA_TYPES: PokemonType[] = [
   "normal", "fire", "water", "electric", "grass", "ice",
   "fighting", "poison", "ground", "flying", "psychic", "bug",
-  "rock", "ghost", "dragon", "dark", "steel", "fairy",
+  "rock", "ghost", "dragon", "dark", "steel",
 ];
 
 export function PokemonEditor({

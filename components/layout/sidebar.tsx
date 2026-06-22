@@ -1,6 +1,8 @@
 "use client";
 
-import { Swords, Users, Wrench, BarChart3, Settings, Code2 } from "lucide-react";
+import { Users, Wrench, BarChart3, Settings, Code2 } from "lucide-react";
+import Image from "next/image";
+import synergyLogo from "@/assets/synergy_logo.png";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
@@ -8,7 +10,7 @@ import { usePathname, useRouter } from "next/navigation";
 const navItems: { path: string; label: string; icon: typeof Users }[] = [
   { path: "/", label: "Teams", icon: Users },
   { path: "/builder", label: "Builder", icon: Wrench },
-  { path: "/resources", label: "Analytics", icon: BarChart3 },
+  { path: "/analytics", label: "Analytics", icon: BarChart3 },
   { path: "/settings", label: "Settings", icon: Settings },
 ];
 
@@ -19,16 +21,16 @@ export function Sidebar() {
   return (
     <aside className="flex h-full w-64 shrink-0 flex-col border-r border-pk-border bg-pk-sidebar-bg">
       {/* Logo */}
-      <div className="flex items-center gap-4 px-6 py-5">
-        <div className="flex h-10 w-10 items-center justify-center bg-black">
-          <Swords className="h-5 w-5 text-white" />
+      <div className="flex flex-col items-center gap-2 px-6 py-6">
+        <div className="flex h-14 w-20 items-center justify-center">
+          <Image src={synergyLogo} alt="Synergy" className="h-full w-full object-contain" />
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col items-center">
           <span className="text-lg font-semibold leading-tight text-pk-text-primary">
-            Pro Builder
+            Synergy
           </span>
           <span className="text-[10px] font-normal tracking-widest text-pk-text-secondary">
-            VGC 2025
+            Team Builder
           </span>
         </div>
       </div>

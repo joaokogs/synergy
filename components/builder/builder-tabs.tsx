@@ -69,6 +69,10 @@ export function BuilderTabs({ members, activeSlot, onSelectSlot, onRemoveSlot }:
       <div className="flex">
         {filled.map((member) => {
           const slot = member.slot;
+          const tabSpriteUrl = member.activeForm?.spriteUrl
+            ?? (member.gender === "female" && member.pokemon.spriteFemaleUrl
+              ? member.pokemon.spriteFemaleUrl
+              : undefined);
           return (
             <TabButton
               key={slot}
@@ -80,6 +84,8 @@ export function BuilderTabs({ members, activeSlot, onSelectSlot, onRemoveSlot }:
               <PokemonSprite
                 id={member.pokemon.id}
                 size={16}
+                gender={member.gender}
+                spriteUrl={tabSpriteUrl}
                 className="shrink-0 rounded-sm"
               />
               <span className="truncate max-w-[60px] sm:max-w-[100px]">

@@ -6,7 +6,7 @@ interface TypeBadgeProps {
   className?: string;
 }
 
-const TYPE_CLASSES: Record<PokemonType, string> = {
+const TYPE_CLASSES: Partial<Record<PokemonType, string>> = {
   normal: "bg-[#A8A77A]",
   fire: "bg-[#EE8130]",
   water: "bg-[#6390F0]",
@@ -24,7 +24,6 @@ const TYPE_CLASSES: Record<PokemonType, string> = {
   dragon: "bg-[#6F35FC]",
   dark: "bg-[#705746]",
   steel: "bg-[#B7B7CE] text-black",
-  fairy: "bg-[#D685AD]",
 };
 
 export function TypeBadge({ type, className }: TypeBadgeProps) {

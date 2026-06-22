@@ -15,8 +15,9 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PKMN Builder",
-  description: "Pokémon Team Builder — Build your perfect team",
+  title: "Synergy",
+  description: "Synergy — Pokémon Team Builder",
+  icons: [{ rel: "icon", url: "/icon.png" }],
 };
 
 export default function RootLayout({

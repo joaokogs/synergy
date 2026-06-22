@@ -3,12 +3,15 @@
 import { useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { getPokemonFormSpriteUrl } from "@/lib/pokeapi";
 
 interface PokemonSpriteProps {
   id: number;
   size?: number;
   className?: string;
   alt?: string;
+  gender?: "male" | "female";
+  spriteUrl?: string;
 }
 
 export function PokemonSprite({
@@ -16,8 +19,12 @@ export function PokemonSprite({
   size = 64,
   className,
   alt = "Pokémon",
+  gender,
+  spriteUrl: externalUrl,
 }: PokemonSpriteProps) {
   const [error, setError] = useState(false);
+
+  const spriteUrl = externalUrl ?? getPokemonFormSpriteUrl(id);
 
   return (
     <div
@@ -29,7 +36,8 @@ export function PokemonSprite({
     >
       {!error ? (
         <Image
-          src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`}
+          key={`${id}-${gender ?? "default"}`}
+          src={spriteUrl}
           alt={alt}
           width={size * 0.75}
           height={size * 0.75}
@@ -38,7 +46,16 @@ export function PokemonSprite({
           priority
         />
       ) : (
-        <span className="text-xs text-pk-text-secondary">?</span>
+        <Image
+          key={`${id}-fallback`}
+          src={getPokemonFormSpriteUrl(id)}
+          alt={alt}
+          width={size * 0.75}
+          height={size * 0.75}
+          className="object-contain"
+          onError={() => setError(true)}
+          priority
+        />
       )}
     </div>
   );
