@@ -1,0 +1,32 @@
+{
+  "pokemon": "chansey",
+  "tier": "OverUsed",
+  "team": "OU Physical Wall",
+  "item": "eviolite",
+  "ability": "natural-cure",
+  "teraType": "normal",
+  "nature": "Bold",
+  "level": 50,
+  "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+  },
+  "evs": {
+    "hp": 252,
+    "atk": 0,
+    "def": 252,
+    "spa": 0,
+    "spd": 6,
+    "spe": 0
+  },
+  "moves": [
+    "seismic-toss",
+    "soft-boiled",
+    "stealth-rock",
+    "toxic"
+  ]
+}

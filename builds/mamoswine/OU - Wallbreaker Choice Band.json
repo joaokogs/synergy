@@ -1,0 +1,32 @@
+{
+  "pokemon": "mamoswine",
+  "tier": "OverUsed",
+  "team": "OU - Wallbreaker Choice Band",
+  "item": "choice-band",
+  "ability": "thick-fat",
+  "teraType": "ice",
+  "nature": "Adamant",
+  "level": 50,
+  "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+  },
+  "evs": {
+    "hp": 0,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 6,
+    "spe": 252
+  },
+  "moves": [
+    "icicle-crash",
+    "ice-shard",
+    "earthquake",
+    "superpower"
+  ]
+}

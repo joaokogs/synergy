@@ -1,0 +1,32 @@
+{
+  "pokemon": "garchomp",
+  "tier": "OverUsed",
+  "team": "OU Sweeper SD",
+  "item": "leftovers",
+  "ability": "rough-skin",
+  "teraType": "dragon",
+  "nature": "Jolly",
+  "level": 50,
+  "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+  },
+  "evs": {
+    "hp": 0,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 6,
+    "spe": 252
+  },
+  "moves": [
+    "earthquake",
+    "dragon-claw",
+    "swords-dance",
+    "substitute"
+  ]
+}

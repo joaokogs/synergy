@@ -1,0 +1,32 @@
+{
+  "pokemon": "scizor",
+  "tier": "OverUsed",
+  "team": "OU Sweeper SD",
+  "item": "leftovers",
+  "ability": "technician",
+  "teraType": "bug",
+  "nature": "Adamant",
+  "level": 50,
+  "ivs": {
+    "hp": 31,
+    "atk": 31,
+    "def": 31,
+    "spa": 31,
+    "spd": 31,
+    "spe": 31
+  },
+  "evs": {
+    "hp": 158,
+    "atk": 252,
+    "def": 0,
+    "spa": 0,
+    "spd": 0,
+    "spe": 100
+  },
+  "moves": [
+    "bullet-punch",
+    "swords-dance",
+    "bug-bite",
+    "roost"
+  ]
+}
