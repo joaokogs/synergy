@@ -50,9 +50,7 @@ export function MovesetEditor({
 
   const filteredMoves = useMemo(
     () =>
-      availableMoves
-        .filter((m) => m.toLowerCase().includes(searchQuery.toLowerCase()))
-        .slice(0, 80),
+      availableMoves.filter((m) => m.toLowerCase().includes(searchQuery.toLowerCase())),
     [availableMoves, searchQuery]
   );
 

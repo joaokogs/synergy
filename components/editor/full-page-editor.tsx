@@ -182,7 +182,7 @@ export function FullPageEditor({
 
         {/* Right Column: Side Panel (Popular Builds / Speed) */}
         <div className="flex min-w-0 w-[35%] shrink-0 flex-col gap-4 overflow-y-auto">
-          <BuilderSidePanel currentPokemon={pokemon} onUpdate={onUpdate} onUpdateEvs={onUpdateEvs} onUpdateIvs={onUpdateIvs} onUpdateMoves={onUpdateMoves} />
+          <BuilderSidePanel currentPokemon={pokemon} member={member} onUpdate={onUpdate} onUpdateEvs={onUpdateEvs} onUpdateIvs={onUpdateIvs} onUpdateMoves={onUpdateMoves} />
         </div>
       </div>
     </div>

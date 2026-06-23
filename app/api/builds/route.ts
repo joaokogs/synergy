@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { readdirSync, readFileSync, existsSync } from "fs";
+import { readdirSync, readFileSync, writeFileSync, unlinkSync, existsSync, mkdirSync } from "fs";
 import { join } from "path";
 
 export async function GET(request: Request) {
@@ -55,4 +55,81 @@ export async function GET(request: Request) {
   }
 
   return NextResponse.json(allBuilds);
+}
+
+export async function POST(request: Request) {
+  const body = await request.json();
+  const { pokemon, team } = body;
+
+  if (!pokemon || !team) {
+    return NextResponse.json({ error: "pokemon and team are required" }, { status: 400 });
+  }
+
+  const sanitizedTeam = team.replace(/[^a-zA-Z0-9 _-]/g, "");
+  if (!sanitizedTeam) {
+    return NextResponse.json({ error: "Invalid team name" }, { status: 400 });
+  }
+
+  const buildsDir = join(process.cwd(), "builds", pokemon);
+
+  if (!existsSync(buildsDir)) {
+    mkdirSync(buildsDir, { recursive: true });
+  }
+
+  const filePath = join(buildsDir, `${sanitizedTeam}.json`);
+  if (existsSync(filePath)) {
+    return NextResponse.json({ error: "Uma build com esse nome já existe" }, { status: 409 });
+  }
+
+  writeFileSync(filePath, JSON.stringify({ ...body, team: sanitizedTeam }, null, 2));
+  return NextResponse.json({ success: true }, { status: 201 });
+}
+
+export async function PUT(request: Request) {
+  const body = await request.json();
+  const { pokemon, team, originalTeam } = body;
+
+  if (!pokemon || !team) {
+    return NextResponse.json({ error: "pokemon and team are required" }, { status: 400 });
+  }
+
+  const sanitizedTeam = team.replace(/[^a-zA-Z0-9 _-]/g, "");
+  if (!sanitizedTeam) {
+    return NextResponse.json({ error: "Invalid team name" }, { status: 400 });
+  }
+
+  const buildsDir = join(process.cwd(), "builds", pokemon);
+
+  if (originalTeam && originalTeam !== sanitizedTeam) {
+    const oldPath = join(buildsDir, `${originalTeam}.json`);
+    if (existsSync(oldPath)) {
+      unlinkSync(oldPath);
+    }
+  }
+
+  if (!existsSync(buildsDir)) {
+    mkdirSync(buildsDir, { recursive: true });
+  }
+
+  const filePath = join(buildsDir, `${sanitizedTeam}.json`);
+  writeFileSync(filePath, JSON.stringify({ ...body, team: sanitizedTeam }, null, 2));
+  return NextResponse.json({ success: true });
+}
+
+export async function DELETE(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const pokemon = searchParams.get("pokemon");
+  const team = searchParams.get("team");
+
+  if (!pokemon || !team) {
+    return NextResponse.json({ error: "pokemon and team are required" }, { status: 400 });
+  }
+
+  const filePath = join(process.cwd(), "builds", pokemon, `${team}.json`);
+  if (!existsSync(filePath)) {
+    return NextResponse.json({ error: "Build não encontrada" }, { status: 404 });
+  }
+
+  unlinkSync(filePath);
+  return NextResponse.json({ success: true });
 }

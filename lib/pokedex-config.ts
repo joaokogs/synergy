@@ -42,3 +42,34 @@ export async function getPokemonBuilds(pokemonName: string, tier: string): Promi
   if (!res.ok) return [];
   return res.json();
 }
+
+export async function createBuild(build: BuildPokemon): Promise<{ success: boolean; error?: string }> {
+  const res = await fetch("/api/builds", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(build),
+  });
+  const data = await res.json();
+  if (!res.ok) return { success: false, error: data.error };
+  return { success: true };
+}
+
+export async function updateBuild(build: BuildPokemon, originalTeam?: string): Promise<{ success: boolean; error?: string }> {
+  const res = await fetch("/api/builds", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...build, originalTeam }),
+  });
+  const data = await res.json();
+  if (!res.ok) return { success: false, error: data.error };
+  return { success: true };
+}
+
+export async function deleteBuild(pokemon: string, team: string): Promise<{ success: boolean; error?: string }> {
+  const res = await fetch(`/api/builds?pokemon=${encodeURIComponent(pokemon)}&team=${encodeURIComponent(team)}`, {
+    method: "DELETE",
+  });
+  const data = await res.json();
+  if (!res.ok) return { success: false, error: data.error };
+  return { success: true };
+}

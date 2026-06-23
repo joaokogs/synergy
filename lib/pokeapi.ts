@@ -10,7 +10,7 @@ const cache = new Map<string, unknown>();
 
 async function fetchWithCache<T>(url: string): Promise<T> {
   if (cache.has(url)) return cache.get(url) as T;
-  const res = await fetch(url);
+  const res = await fetch(url, { cache: "no-cache" });
   if (!res.ok) throw new Error(`PokéAPI error: ${res.status} ${res.statusText}`);
   const data = (await res.json()) as T;
   cache.set(url, data);
@@ -220,7 +220,7 @@ export async function getPokemonData(
     displayName: capitalize(speciesName ?? data.name),
     types: data.types.map((t) => t.type.name as PokemonType),
     abilities: data.abilities.map((a) => a.ability.name),
-    moves: moves.slice(0, 100),
+    moves,
     baseStats,
     spriteUrl,
     spriteFemaleUrl,
