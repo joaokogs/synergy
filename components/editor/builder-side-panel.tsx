@@ -6,11 +6,11 @@ import { cn } from "@/lib/utils";
 import { SpeedTierList } from "./speed-tier-list";
 import { getPokemonBuilds, type BuildPokemon, type Tier, TIERS } from "@/lib/pokedex-config";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import type { PokemonBase, PokemonStat } from "@/types/pokemon";
+import type { PokemonBase, PokemonStat, PokemonType } from "@/types/pokemon";
 
 interface BuilderSidePanelProps {
   currentPokemon: PokemonBase;
-  onUpdate: (updates: Partial<{ item: string | null; ability: string | null; teraType: string | null; nature: string | null; level: number }>) => void;
+  onUpdate: (updates: Partial<{ item: string | null; ability: string | null; teraType: PokemonType | null; nature: string | null; level: number }>) => void;
   onUpdateEvs: (evs: Partial<Record<PokemonStat, number>>) => void;
   onUpdateIvs: (ivs: Partial<Record<PokemonStat, number>>) => void;
   onUpdateMoves: (moves: (string | null)[]) => void;
