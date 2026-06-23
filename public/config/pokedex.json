@@ -1,0 +1,47 @@
+{
+  "tiers": {
+    "OverUsed": [
+      "garchomp", "slowbro", "heatran", "rotom-wash", "ferrothorn",
+      "excadrill", "tyranitar", "gengar", "mienshao", "jirachi",
+      "chansey", "gliscor", "scizor", "volcarona", "salamence",
+      "skarmory", "dragonite", "porygon-z", "metagross", "chandelure",
+      "togekiss", "hydreigon", "conkeldurr", "lucario", "infernape",
+      "jellicent", "amoonguss", "serperior", "cresselia",
+      "umbreon", "bronzong", "breloom", "gyarados", "zapdos",
+      "starmie", "suicune", "pelipper", "sableye", "crawdaunt",
+      "weavile", "reuniclus", "raikou", "weezing", "mamoswine"
+    ],
+    "UnderUsed": [
+      "venusaur", "nidoking", "nidoqueen", "ninetales", "machamp",
+      "tentacruel", "cloyster", "feraligatr", "crobat", "politoed",
+      "quagsire", "espeon", "umbreon", "slowking", "gligar",
+      "heracross", "donphan", "porygon2", "blissey", "entei",
+      "ninjask", "medicham", "torkoal", "flygon", "empooleon",
+      "gastrodon", "mismagius", "honchkrow", "spiritomb", "hippowdon", 
+      "magnezone", "ryperior", "tangrowth", "yanmega", "froslass", "rotom-heat",
+      "shaymin", "rotom-mow", "gigalith", "scolipede", "krookodile", "darmanitan",
+      "sigilyph", "cofagrigus", "haxorus", "druddigon", "bisharp"
+    ],
+    "NeverUsed": [
+      "blastoise", "clafable", "gobat", "venomoth", "golduck",
+      "arcanine", "poliwrath", "alakazam", "golem", "magneton",
+      "electrode", "hitmonchan", "vaporeon", "jolteon", "kabutops",
+      "snorlax", "moltres", "lanturn", "xatu", "steelix",
+      "qwilfish", "piloswine", "mantine", "hitmontop", "sceptile",
+      "blaziken", "swampert", "ludicolo", "gardevoir", "hariyama", 
+      "sharpedo", "altaria", "milotic", "dusclops", "torterra", "roserade",
+      "ambipom", "skuntank", "bronzor", "toxicroak", "abomasnow", "gallade",
+      "rotom", "servine", "zoroark", "cinccino", "eelektross", "braviary", "mandibuzz", "durant"
+    ],
+    "Doubles": [
+      "rotom-wash", "hydreigon", "metagross", "hitmontopp", "dragonite",
+      "zapdos", "heatran", "tyranitar", "kingdra", "garchomp",
+      "mamoswine", "amoonguss", "jirachi", "scizor", "crobat",
+      "politoed", "conkeldurr", "terrakion", "cresselia", "whimsicott",
+      "gallade", "chandelure", "weavile", "dusclops", "breloom", "sableye", 
+      "togekiss", "ferrothorn", "salamence", "gengar", "mienshao", "volcarona", "milotic", "electabuz",
+      "pelipper", "blastoise", "shedinja", "hariyama", "abomasnow", "bronzong", "raikou", "gyarados", 
+      "rotom-heat", "rotom-mow", "serperior", "excadrill", "ryperior", "reuniclus", "weezing", "gastrodon", "slowbro", "suicune","aerodactyl"
+    ]
+  }
+}

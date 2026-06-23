@@ -10,6 +10,7 @@ import { AbilitySelector } from "./ability-selector";
 import { MovesetEditor } from "./moveset-editor";
 import { UnifiedStats } from "./unified-stats";
 import { GenderFormSelector } from "./gender-form-selector";
+import { BuilderSidePanel } from "./builder-side-panel";
 
 import type { TeamPokemon, PokemonStat } from "@/types/pokemon";
 
@@ -159,7 +160,7 @@ export function FullPageEditor({
           </div>
         </div>
 
-        {/* Center Column: Unified Stats (Base + IV + EV + Nature + Final) */}
+        {/* Center Column: Stats + Moves */}
         <div className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto">
           <UnifiedStats
             baseStats={pokemon.baseStats}
@@ -170,10 +171,6 @@ export function FullPageEditor({
             onUpdateIvs={onUpdateIvs}
             onUpdateEvs={onUpdateEvs}
           />
-        </div>
-
-        {/* Right Column: Moveset */}
-        <div className="flex min-w-0 flex-1 flex-col gap-4 overflow-y-auto">
           <div className="border border-pk-border bg-pk-card-bg p-4">
             <MovesetEditor
               moves={moves}
@@ -181,6 +178,11 @@ export function FullPageEditor({
               onChange={onUpdateMoves}
             />
           </div>
+        </div>
+
+        {/* Right Column: Side Panel (Popular Builds / Speed) */}
+        <div className="flex min-w-0 w-[35%] shrink-0 flex-col gap-4 overflow-y-auto">
+          <BuilderSidePanel currentPokemon={pokemon} onUpdate={onUpdate} onUpdateEvs={onUpdateEvs} onUpdateIvs={onUpdateIvs} onUpdateMoves={onUpdateMoves} />
         </div>
       </div>
     </div>
