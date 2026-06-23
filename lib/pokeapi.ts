@@ -499,3 +499,16 @@ export async function getMovesData(
 ): Promise<(MoveInfo | null)[]> {
   return Promise.all(moveNames.map((m) => getMoveData(m)));
 }
+
+let allMovesCache: string[] | null = null;
+
+export async function getAllMoves(): Promise<string[]> {
+  if (allMovesCache) return allMovesCache;
+
+  const data = await fetchWithCache<{
+    results: { name: string; url: string }[];
+  }>(`${POKEAPI_BASE}/move?limit=10000&offset=0`);
+
+  allMovesCache = data.results.map((r) => r.name);
+  return allMovesCache;
+}

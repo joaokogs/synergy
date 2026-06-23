@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import { PokemonSprite } from "@/components/pokemon/pokemon-sprite";
 import { TypeBadge } from "@/components/pokemon/type-badge";
@@ -13,6 +14,7 @@ import { GenderFormSelector } from "./gender-form-selector";
 import { BuilderSidePanel } from "./builder-side-panel";
 
 import type { TeamPokemon, PokemonStat } from "@/types/pokemon";
+import { getAllMoves } from "@/lib/pokeapi";
 
 interface FullPageEditorProps {
   member: TeamPokemon;
@@ -38,6 +40,11 @@ export function FullPageEditor({
   hideHeader = false,
 }: FullPageEditorProps) {
   const { pokemon, ability, item, moves, ivs, evs, nature, level = 50, gender, activeForm } = member;
+  const [allMoves, setAllMoves] = useState<string[] | null>(null);
+
+  useEffect(() => {
+    getAllMoves().then(setAllMoves);
+  }, []);
 
   const displayName = pokemon.displayName;
   const spriteUrl = activeForm?.spriteUrl
@@ -174,7 +181,7 @@ export function FullPageEditor({
           <div className="border border-pk-border bg-pk-card-bg p-4">
             <MovesetEditor
               moves={moves}
-              availableMoves={pokemon.moves}
+              availableMoves={allMoves ?? pokemon.moves}
               onChange={onUpdateMoves}
             />
           </div>
