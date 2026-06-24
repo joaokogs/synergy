@@ -3,9 +3,15 @@ import { persist } from "zustand/middleware";
 import type { Team, TeamPokemon, PokemonBase, PokemonStat } from "@/types/pokemon";
 import { getFormPokemonData } from "@/lib/pokeapi";
 
-function defaultTeam(): Team {
+let nextId = 1;
+function generateId(): string {
+  return `team_${nextId++}_${Date.now()}`;
+}
+
+function defaultTeam(name = "My Team"): Team {
   return {
-    name: "My Team",
+    id: generateId(),
+    name,
     format: "VGC 2025",
     members: Array(6).fill(null),
   };
@@ -19,8 +25,13 @@ function defaultEvs(): Record<PokemonStat, number> {
   return { hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 };
 }
 
+function updateTeamInList(teams: Team[], teamId: string, updater: (team: Team) => Team): Team[] {
+  return teams.map((t) => (t.id === teamId ? updater(t) : t));
+}
+
 interface TeamState {
-  team: Team;
+  teams: Team[];
+  activeTeamId: string;
   activeSlot: number;
   setActiveSlot: (slot: number) => void;
   addPokemon: (pokemon: PokemonBase) => void;
@@ -29,23 +40,73 @@ interface TeamState {
   updateEvs: (slot: number, evs: Partial<Record<PokemonStat, number>>) => void;
   updateIvs: (slot: number, ivs: Partial<Record<PokemonStat, number>>) => void;
   updateMoves: (slot: number, moves: (string | null)[]) => void;
-  renameTeam: (name: string) => void;
+  renameTeam: (teamId: string, name: string) => void;
   resetTeam: () => void;
   updateGender: (slot: number, gender: "male" | "female") => void;
   switchForm: (slot: number, formName: string) => Promise<void>;
+  createTeam: (name?: string) => string;
+  deleteTeam: (teamId: string) => void;
+  duplicateTeam: (teamId: string) => void;
+  setActiveTeam: (teamId: string) => void;
 }
+
+const defaultTeams = [defaultTeam()];
 
 export const useTeamStore = create<TeamState>()(
   persist(
     (set) => ({
-      team: defaultTeam(),
+      teams: defaultTeams,
+      activeTeamId: defaultTeams[0].id,
       activeSlot: 1,
 
       setActiveSlot: (slot) => set({ activeSlot: slot }),
 
+      setActiveTeam: (teamId) =>
+        set((state) => {
+          const exists = state.teams.some((t) => t.id === teamId);
+          return exists ? { activeTeamId: teamId } : state;
+        }),
+
+      createTeam: (name) => {
+        const team = defaultTeam(name);
+        set((state) => ({
+          teams: [...state.teams, team],
+          activeTeamId: team.id,
+        }));
+        return team.id;
+      },
+
+      deleteTeam: (teamId) =>
+        set((state) => {
+          if (state.teams.length <= 1) return state;
+          const filtered = state.teams.filter((t) => t.id !== teamId);
+          const wasActive = state.activeTeamId === teamId;
+          return {
+            teams: filtered,
+            activeTeamId: wasActive ? filtered[0].id : state.activeTeamId,
+          };
+        }),
+
+      duplicateTeam: (teamId) =>
+        set((state) => {
+          const source = state.teams.find((t) => t.id === teamId);
+          if (!source) return state;
+          const clone: Team = {
+            ...source,
+            id: generateId(),
+            name: `${source.name} (copy)`,
+            members: source.members.map((m) =>
+              m ? { ...m, slot: m.slot } : null
+            ),
+          };
+          return { teams: [...state.teams, clone] };
+        }),
+
       addPokemon: (pokemon) =>
         set((state) => {
-          const members = [...state.team.members];
+          const team = state.teams.find((t) => t.id === state.activeTeamId);
+          if (!team) return state;
+          const members = [...team.members];
           const emptyIndex = members.findIndex((m) => m === null);
           if (emptyIndex === -1) return state;
           const slot = emptyIndex + 1;
@@ -66,12 +127,14 @@ export const useTeamStore = create<TeamState>()(
             level: 50,
             gender: defaultGender,
           };
-          return { team: { ...state.team, members } };
+          return { teams: updateTeamInList(state.teams, state.activeTeamId, (t) => ({ ...t, members })) };
         }),
 
       removePokemon: (slot) =>
         set((state) => {
-          const members = [...state.team.members];
+          const team = state.teams.find((t) => t.id === state.activeTeamId);
+          if (!team) return state;
+          const members = [...team.members];
           members[slot - 1] = null;
           const filled = members.filter((m): m is TeamPokemon => m !== null);
           const compacted: (TeamPokemon | null)[] = filled.map((m, i) => ({
@@ -81,22 +144,26 @@ export const useTeamStore = create<TeamState>()(
           while (compacted.length < 6) {
             compacted.push(null);
           }
-          return { team: { ...state.team, members: compacted } };
+          return { teams: updateTeamInList(state.teams, state.activeTeamId, (t) => ({ ...t, members: compacted })) };
         }),
 
       updatePokemon: (slot, updates) =>
         set((state) => {
-          const members = [...state.team.members];
+          const team = state.teams.find((t) => t.id === state.activeTeamId);
+          if (!team) return state;
+          const members = [...team.members];
           const member = members[slot - 1];
           if (member) {
             members[slot - 1] = { ...member, ...updates };
           }
-          return { team: { ...state.team, members } };
+          return { teams: updateTeamInList(state.teams, state.activeTeamId, (t) => ({ ...t, members })) };
         }),
 
       updateEvs: (slot, evs) =>
         set((state) => {
-          const members = [...state.team.members];
+          const team = state.teams.find((t) => t.id === state.activeTeamId);
+          if (!team) return state;
+          const members = [...team.members];
           const member = members[slot - 1];
           if (member) {
             const newEvs = { ...member.evs, ...evs };
@@ -105,12 +172,14 @@ export const useTeamStore = create<TeamState>()(
               members[slot - 1] = { ...member, evs: newEvs };
             }
           }
-          return { team: { ...state.team, members } };
+          return { teams: updateTeamInList(state.teams, state.activeTeamId, (t) => ({ ...t, members })) };
         }),
 
       updateIvs: (slot, ivs) =>
         set((state) => {
-          const members = [...state.team.members];
+          const team = state.teams.find((t) => t.id === state.activeTeamId);
+          if (!team) return state;
+          const members = [...team.members];
           const member = members[slot - 1];
           if (member) {
             members[slot - 1] = {
@@ -118,32 +187,38 @@ export const useTeamStore = create<TeamState>()(
               ivs: { ...member.ivs, ...ivs },
             };
           }
-          return { team: { ...state.team, members } };
+          return { teams: updateTeamInList(state.teams, state.activeTeamId, (t) => ({ ...t, members })) };
         }),
 
       updateMoves: (slot, moves) =>
         set((state) => {
-          const members = [...state.team.members];
+          const team = state.teams.find((t) => t.id === state.activeTeamId);
+          if (!team) return state;
+          const members = [...team.members];
           const member = members[slot - 1];
           if (member) {
             members[slot - 1] = { ...member, moves };
           }
-          return { team: { ...state.team, members } };
+          return { teams: updateTeamInList(state.teams, state.activeTeamId, (t) => ({ ...t, members })) };
         }),
 
       updateGender: (slot, gender) =>
         set((state) => {
-          const members = [...state.team.members];
+          const team = state.teams.find((t) => t.id === state.activeTeamId);
+          if (!team) return state;
+          const members = [...team.members];
           const member = members[slot - 1];
           if (member) {
             members[slot - 1] = { ...member, gender };
           }
-          return { team: { ...state.team, members } };
+          return { teams: updateTeamInList(state.teams, state.activeTeamId, (t) => ({ ...t, members })) };
         }),
 
       switchForm: async (slot, formName) => {
         const state = useTeamStore.getState();
-        const member = state.team.members[slot - 1];
+        const team = state.teams.find((t) => t.id === state.activeTeamId);
+        if (!team) return;
+        const member = team.members[slot - 1];
         if (!member) return;
 
         const targetForm = member.pokemon.forms?.find(
@@ -157,25 +232,25 @@ export const useTeamStore = create<TeamState>()(
             ? ("male" as const)
             : undefined;
 
-        // Cosmetic form: just update sprite/activeForm
         if (targetForm.cosmetic) {
           set({
-            team: {
-              ...state.team,
-              members: state.team.members.map((m, i) =>
+            teams: updateTeamInList(state.teams, state.activeTeamId, (t) => ({
+              ...t,
+              members: t.members.map((m, i) =>
                 i === slot - 1 && m
                   ? { ...m, gender: defaultGender, activeForm: targetForm }
                   : m
               ),
-            },
+            })),
           });
           return;
         }
 
-        // Species-level form: re-fetch pokemon data
         const formData = await getFormPokemonData(formName);
         const currentState = useTeamStore.getState();
-        const currentMember = currentState.team.members[slot - 1];
+        const currentTeam = currentState.teams.find((t) => t.id === currentState.activeTeamId);
+        if (!currentTeam) return;
+        const currentMember = currentTeam.members[slot - 1];
         if (!currentMember) return;
 
         const formGender =
@@ -184,9 +259,9 @@ export const useTeamStore = create<TeamState>()(
             : undefined;
 
         set({
-          team: {
-            ...currentState.team,
-            members: currentState.team.members.map((m, i) =>
+          teams: updateTeamInList(currentState.teams, currentState.activeTeamId, (t) => ({
+            ...t,
+            members: t.members.map((m, i) =>
               i === slot - 1 && m
                 ? {
                     ...m,
@@ -203,17 +278,27 @@ export const useTeamStore = create<TeamState>()(
                   }
                 : m
             ),
-          },
+          })),
         });
       },
 
-      renameTeam: (name) =>
+      renameTeam: (teamId, name) =>
         set((state) => ({
-          team: { ...state.team, name },
+          teams: updateTeamInList(state.teams, teamId, (t) => ({ ...t, name })),
         })),
 
-      resetTeam: () => set({ team: defaultTeam() }),
+      resetTeam: () =>
+        set((state) => ({
+          teams: updateTeamInList(state.teams, state.activeTeamId, () => defaultTeam()),
+        })),
     }),
-    { name: "synergy-team" }
+    {
+      name: "synergy-teams",
+      partialize: (state) => ({
+        teams: state.teams,
+        activeTeamId: state.activeTeamId,
+        activeSlot: state.activeSlot,
+      }),
+    }
   )
 );

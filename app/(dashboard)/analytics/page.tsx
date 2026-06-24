@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useTeamStore } from "@/stores/team-store";
+import { useTeam } from "@/hooks/use-team";
 import { ALL_TYPES, getAbilityOverrides } from "@/lib/type-chart";
 import { analyzeTeam } from "@/lib/analytics";
 import { TYPE_COLORS } from "@/lib/type-utils";
@@ -75,9 +75,7 @@ function displayAbilityName(name: string): string {
 }
 
 export default function AnalyticsPage() {
-  const team = useTeamStore((s) => s.team);
-  const addPokemon = useTeamStore((s) => s.addPokemon);
-  const removePokemon = useTeamStore((s) => s.removePokemon);
+  const { team, addPokemon, removePokemon } = useTeam();
   const [searchOpen, setSearchOpen] = useState(false);
   const [abilityOverrides, setAbilityOverrides] = useState<Record<number, string>>({});
 
@@ -140,6 +138,12 @@ export default function AnalyticsPage() {
                 <span className="text-[10px] font-semibold text-pk-text-secondary uppercase tracking-wider">
                   Attack
                 </span>
+              </div>
+              <div className="flex w-9 shrink-0 items-center justify-center border-l border-pk-border bg-red-50/50 dark:bg-red-950/20" title="Weakness count (2×/4×)">
+                <span className="text-[11px] font-bold text-red-600 dark:text-red-400">W</span>
+              </div>
+              <div className="flex w-9 shrink-0 items-center justify-center border-l border-pk-border bg-green-50/50 dark:bg-green-950/20" title="Resistance count (½/¼/0)">
+                <span className="text-[11px] font-bold text-green-600 dark:text-green-400">R</span>
               </div>
               {[1, 2, 3, 4, 5, 6].map((slot) => {
                 const member = analysisBySlot.get(slot);
@@ -210,12 +214,6 @@ export default function AnalyticsPage() {
                   </div>
                 );
               })}
-              <div className="flex w-9 shrink-0 items-center justify-center border-l border-pk-border bg-red-50/50 dark:bg-red-950/20" title="Weakness count (2×/4×)">
-                <span className="text-[11px] font-bold text-red-600 dark:text-red-400">W</span>
-              </div>
-              <div className="flex w-9 shrink-0 items-center justify-center border-l border-pk-border bg-green-50/50 dark:bg-green-950/20" title="Resistance count (½/¼/0)">
-                <span className="text-[11px] font-bold text-green-600 dark:text-green-400">R</span>
-              </div>
             </div>
 
             <div className="flex min-h-0 flex-1 flex-col overflow-y-auto">
@@ -234,17 +232,6 @@ export default function AnalyticsPage() {
                         {attackType}
                       </span>
                     </div>
-                    {[1, 2, 3, 4, 5, 6].map((slot) => {
-                      const member = analysisBySlot.get(slot);
-                      return (
-                        <div
-                          key={slot}
-                          className="flex flex-1 items-center justify-center border-l border-pk-border py-1"
-                        >
-                          {member ? <Cell m={member.multipliers[attackType]} /> : <EmptyCell />}
-                        </div>
-                      );
-                    })}
                     <div className="flex w-9 shrink-0 items-center justify-center border-l border-pk-border py-1">
                       <div className={cn(
                         "flex h-7 w-7 items-center justify-center rounded text-[12px] font-bold",
@@ -265,6 +252,17 @@ export default function AnalyticsPage() {
                         {resistances}
                       </div>
                     </div>
+                    {[1, 2, 3, 4, 5, 6].map((slot) => {
+                      const member = analysisBySlot.get(slot);
+                      return (
+                        <div
+                          key={slot}
+                          className="flex flex-1 items-center justify-center border-l border-pk-border py-1"
+                        >
+                          {member ? <Cell m={member.multipliers[attackType]} /> : <EmptyCell />}
+                        </div>
+                      );
+                    })}
                   </div>
                 );
               })}

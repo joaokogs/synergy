@@ -60,6 +60,7 @@ export interface TeamPokemon {
 }
 
 export interface Team {
+  id: string;
   name: string;
   format: string;
   members: (TeamPokemon | null)[]; // 6 slots
