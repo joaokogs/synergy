@@ -254,7 +254,7 @@ function MoveSlotBadge({
             e.stopPropagation();
             onClear();
           }}
-          className="absolute right-1 flex h-5 w-5 items-center justify-center rounded-full text-pk-text-secondary opacity-0 transition-all group-hover:opacity-50 hover:opacity-100 hover:bg-pk-sidebar-bg"
+          className="absolute right-1 flex h-5 w-5 items-center justify-center text-pk-text-secondary opacity-0 transition-all group-hover:opacity-50 hover:opacity-100 hover:bg-pk-sidebar-bg"
         >
           <X className="h-3 w-3" />
         </button>

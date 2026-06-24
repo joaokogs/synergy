@@ -36,7 +36,7 @@ export function CategoryIcon({
   return (
     <span
       className={cn(
-        "inline-flex items-center justify-center rounded px-1 py-0.5 text-[10px] font-bold uppercase leading-none",
+        "inline-flex items-center justify-center px-1 py-0.5 text-[10px] font-bold uppercase leading-none",
         className
       )}
       style={{

@@ -33,7 +33,7 @@ function Cell({ m }: { m: number }) {
   return (
     <div
       className={cn(
-        "flex h-7 w-7 items-center justify-center rounded-[3px] text-[11px] font-bold leading-none",
+        "flex h-7 w-7 items-center justify-center text-[11px] font-bold leading-none",
         CELL_CLASS[m.toString()],
       )}
       title={`${m}×`}
@@ -234,7 +234,7 @@ export default function AnalyticsPage() {
                     </div>
                     <div className="flex w-9 shrink-0 items-center justify-center border-l border-pk-border py-1">
                       <div className={cn(
-                        "flex h-7 w-7 items-center justify-center rounded text-[12px] font-bold",
+                        "flex h-7 w-7 items-center justify-center text-[12px] font-bold",
                         weaknesses > 0
                           ? "bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300"
                           : "text-pk-text-secondary/40",
@@ -244,7 +244,7 @@ export default function AnalyticsPage() {
                     </div>
                     <div className="flex w-9 shrink-0 items-center justify-center border-l border-pk-border py-1">
                       <div className={cn(
-                        "flex h-7 w-7 items-center justify-center rounded text-[12px] font-bold",
+                        "flex h-7 w-7 items-center justify-center text-[12px] font-bold",
                         resistances > 0
                           ? "bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300"
                           : "text-pk-text-secondary/40",

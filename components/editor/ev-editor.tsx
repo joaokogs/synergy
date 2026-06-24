@@ -77,9 +77,9 @@ export function EvEditor({ evs, onChange }: EvEditorProps) {
                 +4
               </button>
             </div>
-            <div className="h-2 flex-1 rounded-full bg-pk-muted-bg">
+            <div className="h-2 flex-1 bg-pk-muted-bg">
               <div
-                className="h-full rounded-full bg-pk-text-primary transition-all"
+                className="h-full bg-pk-text-primary transition-all"
                 style={{ width: `${(evs[stat] / 252) * 100}%` }}
               />
             </div>

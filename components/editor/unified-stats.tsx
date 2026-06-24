@@ -178,9 +178,9 @@ export function UnifiedStats({
               </span>
 
               {/* Stat bar */}
-              <div className="h-2 w-28 overflow-hidden rounded-full bg-pk-muted-bg">
+              <div className="h-2 w-28 overflow-hidden bg-pk-muted-bg">
                 <div
-                  className="h-full rounded-full transition-all duration-150"
+                  className="h-full transition-all duration-150"
                   style={{
                     width: `${barPercent}%`,
                     backgroundColor:
@@ -204,7 +204,6 @@ export function UnifiedStats({
         }
         .ev-slider::-webkit-slider-track {
           height: 4px;
-          border-radius: 2px;
           background: linear-gradient(to right, var(--pk-text-primary, #1a1a1a) 0%, var(--pk-text-primary, #1a1a1a) var(--ev-fill, 0%), var(--pk-muted-bg, #e5e7eb) var(--ev-fill, 0%), var(--pk-muted-bg, #e5e7eb) 100%);
         }
         .ev-slider::-webkit-slider-thumb {
@@ -212,27 +211,25 @@ export function UnifiedStats({
           appearance: none;
           width: 10px;
           height: 10px;
-          border-radius: 2px;
           background: var(--pk-card-bg, #ffffff);
           cursor: pointer;
           border: 2px solid var(--pk-text-primary, #1a1c1c);
+          border-radius: 0;
         }
         .ev-slider::-moz-range-track {
           height: 4px;
-          border-radius: 2px;
           background: var(--pk-muted-bg, #e5e7eb);
         }
         .ev-slider::-moz-range-thumb {
           width: 10px;
           height: 10px;
-          border-radius: 2px;
           background: var(--pk-card-bg, #ffffff);
           cursor: pointer;
           border: 2px solid var(--pk-text-primary, #1a1c1c);
+          border-radius: 0;
         }
         .ev-slider::-moz-range-progress {
           height: 4px;
-          border-radius: 2px;
           background: var(--pk-text-primary, #1a1a1a);
         }
       `}</style>

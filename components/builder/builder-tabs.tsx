@@ -46,13 +46,8 @@ function TabButton({
               borderRight: "1px solid var(--color-pk-border)",
               borderBottom: "1px solid transparent",
               marginBottom: "-1px",
-              borderTopLeftRadius: "6px",
-              borderTopRightRadius: "6px",
             }
-          : {
-              borderTopLeftRadius: "4px",
-              borderTopRightRadius: "4px",
-            }
+          : {}
       }
     >
       {children}

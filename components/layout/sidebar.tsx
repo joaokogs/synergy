@@ -3,7 +3,6 @@
 import { Users, Wrench, BarChart3, Settings, Code2 } from "lucide-react";
 import Image from "next/image";
 import synergyLogo from "@/assets/synergy_logo.png";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -58,17 +57,6 @@ export function Sidebar() {
           );
         })}
       </nav>
-
-      {/* Export Button */}
-      <div className="px-4 pb-4">
-        <Button
-          variant="default"
-          className="w-full rounded-none text-xs font-bold tracking-wider"
-          size="sm"
-        >
-          Export Team
-        </Button>
-      </div>
 
       {/* Bottom Links */}
       <div className="border-t border-pk-border px-4 py-4">

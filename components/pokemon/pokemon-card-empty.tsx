@@ -15,7 +15,7 @@ export function PokemonCardEmpty({ slot, onClick }: PokemonCardEmptyProps) {
       aria-label={`Add Pokémon to slot ${slot}`}
       className="group flex w-full cursor-pointer flex-col items-center justify-center gap-2 border border-dashed border-pk-border bg-pk-card-bg p-4 transition-colors hover:border-pk-text-primary hover:bg-pk-hover-bg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-pk-text-primary"
     >
-      <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-pk-border transition-colors group-hover:border-pk-text-primary">
+      <div className="flex h-10 w-10 items-center justify-center border-2 border-pk-border transition-colors group-hover:border-pk-text-primary">
         <Plus className="h-5 w-5 text-pk-text-secondary transition-colors group-hover:text-pk-text-primary" />
       </div>
       <div className="text-center">
