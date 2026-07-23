@@ -103,7 +103,6 @@ function AbilityOption({
 export function AbilitySelector({ abilities, value, onChange }: AbilitySelectorProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
-  const [info, setInfo] = useState<AbilityInfo | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -111,14 +110,6 @@ export function AbilitySelector({ abilities, value, onChange }: AbilitySelectorP
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [open]);
-
-  useEffect(() => {
-    if (value) {
-      getAbilityData(value).then(setInfo);
-    } else {
-      setInfo(null);
-    }
-  }, [value]);
 
   const filtered = useMemo(() => {
     if (!query.trim()) return abilities;
@@ -167,26 +158,7 @@ export function AbilitySelector({ abilities, value, onChange }: AbilitySelectorP
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
-      {value && info ? (
-        <Popover>
-          <PopoverTrigger render={triggerContent} nativeButton={false} openOnHover delay={300} closeDelay={200} />
-          <PopoverContent
-            side="top"
-            align="center"
-            sideOffset={6}
-            className="w-72 [&[data-slot=popover-content]]:rounded-none"
-          >
-            <div className="flex items-center gap-2 border-b border-border pb-2">
-              <p className="text-sm font-bold text-foreground">{info.displayName}</p>
-            </div>
-            {info.effect && (
-              <p className="pt-2 text-xs leading-relaxed text-muted-foreground">{info.effect}</p>
-            )}
-          </PopoverContent>
-        </Popover>
-      ) : (
-        triggerContent
-      )}
+      {triggerContent}
 
       <PopoverContent
         className="w-(--anchor-width) min-w-[280px] overflow-hidden! p-0!"

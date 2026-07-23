@@ -100,7 +100,6 @@ export function ItemSelector({ value, onChange }: ItemSelectorProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [items, setItems] = useState<ItemInfo[]>([]);
-  const [detail, setDetail] = useState<ItemDetail | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -112,14 +111,6 @@ export function ItemSelector({ value, onChange }: ItemSelectorProps) {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [open]);
-
-  useEffect(() => {
-    if (value) {
-      getItemData(value).then(setDetail);
-    } else {
-      setDetail(null);
-    }
-  }, [value]);
 
   const filtered = useMemo(() => {
     if (!query.trim()) return items.slice(0, 50);
@@ -190,27 +181,7 @@ export function ItemSelector({ value, onChange }: ItemSelectorProps) {
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
-      {value && detail ? (
-        <Popover>
-          <PopoverTrigger render={triggerContent} nativeButton={false} openOnHover delay={300} closeDelay={200} />
-          <PopoverContent
-            side="top"
-            align="center"
-            sideOffset={6}
-            className="w-72 [&[data-slot=popover-content]]:rounded-none"
-          >
-            <div className="flex items-center gap-2 border-b border-border pb-2">
-              <img src={getItemSpriteUrl(detail.name)} alt="" className="h-6 w-6 object-contain" />
-              <p className="text-sm font-bold text-foreground">{detail.displayName}</p>
-            </div>
-            {detail.effect && (
-              <p className="pt-2 text-xs leading-relaxed text-muted-foreground">{detail.effect}</p>
-            )}
-          </PopoverContent>
-        </Popover>
-      ) : (
-        triggerContent
-      )}
+      {triggerContent}
 
       <PopoverContent
         className="w-(--anchor-width) min-w-[280px] overflow-hidden! p-0!"
