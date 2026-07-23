@@ -529,6 +529,13 @@ export async function getAllMoves(): Promise<string[]> {
     results: { name: string; url: string }[];
   }>(`${POKEAPI_BASE}/move?limit=10000&offset=0`);
 
-  allMovesCache = data.results.map((r) => r.name);
+  const moves = data.results.map((r) => r.name);
+
+  const hiddenPowerIndex = moves.indexOf("hidden-power");
+  if (hiddenPowerIndex !== -1) {
+    moves.splice(hiddenPowerIndex, 1, ...POKEMON_TYPES.map((t) => `hidden-power-${t}`));
+  }
+
+  allMovesCache = moves;
   return allMovesCache;
 }
