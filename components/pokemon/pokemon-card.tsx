@@ -156,7 +156,7 @@ function ItemHoverBadge({ itemName }: { itemName: string | null }) {
     };
   }, []);
 
-  if (!itemName) return <span className="flex items-center truncate text-sm font-semibold text-pk-text-primary w-full min-h-[28px] py-0.5">—</span>;
+  if (!itemName) return <span className="flex items-center truncate text-sm font-semibold text-pk-text-primary w-full min-h-[28px] py-0.5 min-w-0">—</span>;
 
   const handleMouseEnter = () => {
     clearTimeout(hideTimer.current);
@@ -175,7 +175,7 @@ function ItemHoverBadge({ itemName }: { itemName: string | null }) {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <span className="flex items-center gap-1.5 truncate text-sm font-semibold text-pk-text-primary w-full min-h-[28px]">
+        <span className="flex items-center gap-1.5 truncate text-sm font-semibold text-pk-text-primary w-full min-h-[28px] min-w-0">
           <img
             src={getItemSpriteUrl(itemName)}
             alt=""
@@ -254,7 +254,7 @@ function AbilityHoverBadge({ abilityName }: { abilityName: string | null }) {
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <span className="flex items-center truncate text-sm font-semibold text-pk-text-primary w-full min-h-[28px] py-0.5">
+        <span className="flex items-center truncate text-sm font-semibold text-pk-text-primary w-full min-h-[28px] py-0.5 min-w-0">
           {displayName}
         </span>
       </PopoverTrigger>

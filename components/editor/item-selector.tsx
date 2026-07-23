@@ -150,7 +150,7 @@ export function ItemSelector({ value, onChange }: ItemSelectorProps) {
     <div className="flex flex-1">
       <PopoverTrigger
         className={cn(
-          "flex h-8 flex-1 items-center gap-2 border px-3 text-sm transition-colors",
+          "flex h-8 flex-1 items-center gap-2 border px-3 text-sm transition-colors min-w-0 overflow-hidden",
           value
             ? "border-pk-border bg-pk-card-bg text-pk-text-primary"
             : "border-dashed border-pk-border bg-pk-card-bg text-pk-text-secondary hover:border-pk-text-primary",
@@ -165,7 +165,7 @@ export function ItemSelector({ value, onChange }: ItemSelectorProps) {
               className="h-5 w-5 object-contain"
               onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
             />
-            <span className="font-medium">{selectedItem.displayName}</span>
+            <span className="truncate font-medium">{selectedItem.displayName}</span>
           </>
         ) : (
           <>
