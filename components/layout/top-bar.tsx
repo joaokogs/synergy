@@ -17,6 +17,7 @@ import { parsePokepaste } from "@/lib/parse-pokepaste";
 import { getPokemonData, formatMoveName } from "@/lib/pokeapi";
 import type { PokemonBase, PokemonType } from "@/types/pokemon";
 import { useTeamStore } from "@/stores/team-store";
+import { useToastStore } from "@/stores/toast-store";
 
 export function TopBar({ onMenuClick }: { onMenuClick?: () => void }) {
   const [importOpen, setImportOpen] = useState(false);
@@ -24,6 +25,7 @@ export function TopBar({ onMenuClick }: { onMenuClick?: () => void }) {
   const [importing, setImporting] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
   const { team } = useTeam();
+  const addToast = useToastStore((s) => s.addToast);
 
   const handleImport = async () => {
     if (!paste.trim() || importing) return;
@@ -169,7 +171,9 @@ export function TopBar({ onMenuClick }: { onMenuClick?: () => void }) {
       .join("\n\n")
 
     navigator.clipboard?.writeText(exportText).then(() => {
-      alert("Team exported to clipboard!");
+      addToast("Team exported to clipboard!");
+    }).catch(() => {
+      addToast("Failed to copy to clipboard", "error");
     });
   };
 
