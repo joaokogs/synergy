@@ -49,18 +49,25 @@ export function MovesetEditor({
   }, [activeSlot]);
 
   const filteredMoves = useMemo(
-    () =>
-      availableMoves
+    () => {
+      const q = searchQuery.toLowerCase().trim();
+      if (!q) return availableMoves.slice(0, 80);
+
+      const normalize = (str: string) => str.replace(/[-\s]+/g, "");
+      const expanded = q.replace(/\bhp\b/g, "hidden power");
+      const tokens = expanded
+        .split(/\s+/)
+        .map(normalize)
+        .filter(Boolean);
+      if (tokens.length === 0) return availableMoves.slice(0, 80);
+
+      return availableMoves
         .filter((m) => {
-          const q = searchQuery.toLowerCase().trim();
-          if (!q) return true;
-          const displayName = m.replace(/-/g, " ");
-          return (
-            m.includes(q.replace(/\s+/g, "-")) ||
-            displayName.includes(q)
-          );
+          const normalized = normalize(m);
+          return tokens.every((token) => normalized.includes(token));
         })
-        .slice(0, 80),
+        .slice(0, 80);
+    },
     [availableMoves, searchQuery]
   );
 
