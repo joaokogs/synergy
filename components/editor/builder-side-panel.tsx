@@ -62,7 +62,7 @@ export function BuilderSidePanel({ currentPokemon, onUpdate, onUpdateEvs, onUpda
             <button
               type="button"
               onClick={() => setTierOpen(!tierOpen)}
-              className="flex items-center gap-1.5 rounded-sm border border-pk-border bg-pk-muted-bg px-2.5 py-1 text-[11px] font-bold text-pk-text-primary transition-colors hover:border-pk-text-primary/40"
+              className="flex items-center gap-1.5 rounded-sm border border-pk-border bg-pk-muted-bg px-2.5 py-1.5 text-[11px] font-bold text-pk-text-primary transition-colors hover:border-pk-text-primary/40 sm:py-1"
             >
               {selectedTier}
               <ChevronDown className="h-3 w-3 text-pk-text-secondary" />
@@ -97,7 +97,7 @@ export function BuilderSidePanel({ currentPokemon, onUpdate, onUpdateEvs, onUpda
               type="button"
               onClick={() => setActiveTab(tab.key)}
               className={cn(
-                "flex flex-1 items-center justify-center gap-1.5 px-3 py-2 text-[10px] font-bold uppercase tracking-wider transition-colors",
+                "flex flex-1 items-center justify-center gap-1.5 px-3 py-2.5 text-[10px] font-bold uppercase tracking-wider transition-colors sm:py-2",
                 activeTab === tab.key
                   ? "border-b-2 border-pk-text-primary text-pk-text-primary"
                   : "text-pk-text-secondary hover:text-pk-text-primary"
@@ -139,7 +139,7 @@ export function BuilderSidePanel({ currentPokemon, onUpdate, onUpdateEvs, onUpda
                         <button
                           type="button"
                           onClick={() => handleApply(build)}
-                          className="flex w-full flex-col items-center justify-center gap-1.5 rounded-md border border-pk-border bg-pk-muted-bg px-4 py-5 text-center transition-all hover:border-pk-text-primary/40 hover:bg-pk-hover-bg"
+                          className="flex w-full flex-col items-center justify-center gap-1.5 rounded-md border border-pk-border bg-pk-muted-bg px-4 py-4 text-center transition-all hover:border-pk-text-primary/40 hover:bg-pk-hover-bg sm:py-5"
                         >
                           <span className="text-sm font-bold text-pk-text-primary">
                             {formatName(build.team ?? "Build")}

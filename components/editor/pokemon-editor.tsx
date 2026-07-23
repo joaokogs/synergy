@@ -66,8 +66,8 @@ export function PokemonEditor({
           </TabsList>
 
           <TabsContent value="overview" className="flex-1 overflow-y-auto space-y-6 pt-6">
-            {/* Sprite à esquerda + campos à direita */}
-            <div className="flex gap-8">
+            {/* Sprite + campos */}
+            <div className="flex flex-col gap-6 sm:flex-row sm:gap-8">
               <div className="flex flex-col items-center gap-2 shrink-0">
                 <PokemonSprite
                   id={pokemon.id}

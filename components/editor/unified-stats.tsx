@@ -64,41 +64,43 @@ export function UnifiedStats({
   };
 
   return (
-    <div className="border border-pk-border bg-pk-card-bg p-4">
-      <div className="mb-3 flex items-center justify-between">
+    <div className="border border-pk-border bg-pk-card-bg p-3 md:p-4">
+      <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-[10px] font-bold uppercase tracking-widest text-pk-text-secondary">
           Stats at Lv. {level}
         </p>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between gap-2 sm:justify-end">
           <span className="text-[10px] font-mono text-pk-text-secondary">
             {remainingEvs >= 0 ? `${remainingEvs} remaining` : "Over limit!"}
           </span>
-          <button
-            type="button"
-            onClick={resetEvs}
-            className="text-[10px] font-medium text-pk-text-secondary underline underline-offset-2 transition-colors hover:text-pk-text-primary"
-          >
-            Reset EVs
-          </button>
-          <button
-            type="button"
-            onClick={maxAllIvs}
-            className="text-[10px] font-medium text-pk-text-secondary underline underline-offset-2 transition-colors hover:text-pk-text-primary"
-          >
-            Max IVs
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={resetEvs}
+              className="text-[10px] font-medium text-pk-text-secondary underline underline-offset-2 transition-colors hover:text-pk-text-primary"
+            >
+              Reset EVs
+            </button>
+            <button
+              type="button"
+              onClick={maxAllIvs}
+              className="text-[10px] font-medium text-pk-text-secondary underline underline-offset-2 transition-colors hover:text-pk-text-primary"
+            >
+              Max IVs
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Header row */}
       <div className="mb-1 flex items-center gap-1.5 px-1">
         <span className="w-8 text-[9px] font-bold uppercase text-pk-text-secondary" />
-        <span className="w-8 text-right text-[9px] font-bold uppercase text-pk-text-secondary">Base</span>
+        <span className="hidden w-8 text-right text-[9px] font-bold uppercase text-pk-text-secondary sm:block">Base</span>
         <span className="w-8 text-center text-[9px] font-bold uppercase text-pk-text-secondary">IV</span>
         <span className="flex-1 text-center text-[9px] font-bold uppercase text-pk-text-secondary">EV</span>
         <span className="w-5 text-center text-[9px] font-bold uppercase text-pk-text-secondary">Nat</span>
         <span className="w-10 text-right text-[9px] font-bold uppercase text-pk-text-secondary">Final</span>
-        <span className="w-28 text-[9px] font-bold uppercase text-pk-text-secondary" />
+        <span className="hidden w-20 text-[9px] font-bold uppercase text-pk-text-secondary lg:block xl:w-28" />
       </div>
 
       <div className="space-y-0.5">
@@ -119,7 +121,7 @@ export function UnifiedStats({
               </span>
 
               {/* Base stat */}
-              <span className="w-8 text-right text-[10px] font-mono text-pk-text-secondary">
+              <span className="hidden w-8 text-right text-[10px] font-mono text-pk-text-secondary sm:block">
                 {baseStats[stat]}
               </span>
 
@@ -131,11 +133,11 @@ export function UnifiedStats({
                 aria-label={`${getStatLabel(stat)} IV`}
                 value={ivs[stat]}
                 onChange={(e) => handleIvChange(stat, e.target.value)}
-                className="h-5 w-8 border border-pk-border bg-transparent px-0.5 text-center text-[9px] font-mono text-pk-text-primary outline-none focus:ring-1 focus:ring-pk-text-primary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                className="h-6 w-8 border border-pk-border bg-transparent px-0.5 text-center text-[10px] font-mono text-pk-text-primary outline-none focus:ring-1 focus:ring-pk-text-primary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               />
 
               {/* EV slider + number */}
-              <div className="flex flex-1 items-center gap-1">
+              <div className="flex flex-1 items-center gap-1 min-w-0">
                 <input
                   type="range"
                   min={0}
@@ -153,7 +155,7 @@ export function UnifiedStats({
                   aria-label={`${getStatLabel(stat)} EV value`}
                   value={evs[stat]}
                   onChange={(e) => handleEvChange(stat, e.target.value)}
-                  className="h-5 w-8 shrink-0 border border-pk-border bg-transparent px-0.5 text-center text-[9px] font-mono text-pk-text-primary outline-none focus:ring-1 focus:ring-pk-text-primary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                  className="h-6 w-8 shrink-0 border border-pk-border bg-transparent px-0.5 text-center text-[10px] font-mono text-pk-text-primary outline-none focus:ring-1 focus:ring-pk-text-primary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 />
               </div>
 
@@ -178,7 +180,7 @@ export function UnifiedStats({
               </span>
 
               {/* Stat bar */}
-              <div className="h-2 w-28 overflow-hidden bg-pk-muted-bg">
+              <div className="hidden h-2 w-20 overflow-hidden bg-pk-muted-bg lg:block xl:w-28">
                 <div
                   className="h-full transition-all duration-150"
                   style={{

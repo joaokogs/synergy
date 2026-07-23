@@ -114,7 +114,7 @@ export function MovesetEditor({
         <span className="text-sm text-pk-text-secondary">{filled}/4</span>
       </div>
 
-      <div className="grid grid-cols-2 gap-1">
+      <div className="grid grid-cols-1 gap-1 sm:grid-cols-2">
         {[0, 1, 2, 3].map((slot) => (
           <MoveSlotBadge
             key={slot}

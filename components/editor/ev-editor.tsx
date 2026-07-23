@@ -47,14 +47,14 @@ export function EvEditor({ evs, onChange }: EvEditorProps) {
       <div className="space-y-2">
         {STAT_ORDER.map((stat) => (
           <div key={stat} className="flex items-center gap-2">
-            <span className="w-14 text-xs font-medium text-pk-text-primary">
+            <span className="w-12 shrink-0 text-xs font-medium text-pk-text-primary sm:w-14">
               {getStatName(stat)}
             </span>
             <div className="flex items-center gap-1">
               <button
                 type="button"
                 aria-label={`Decrease ${getStatName(stat)} EVs by 4`}
-                className="flex h-7 w-7 items-center justify-center border border-pk-border text-sm transition-colors hover:bg-pk-sidebar-bg"
+                className="flex h-8 w-8 items-center justify-center border border-pk-border text-sm transition-colors hover:bg-pk-sidebar-bg sm:h-7 sm:w-7"
                 onClick={() => clampValue(stat, -4)}
               >
                 −4
@@ -66,24 +66,24 @@ export function EvEditor({ evs, onChange }: EvEditorProps) {
                 aria-label={`${getStatName(stat)} EVs`}
                 value={evs[stat]}
                 onChange={(e) => handleChange(stat, e.target.value)}
-                className="h-7 w-16 border border-pk-border px-2 text-center text-sm font-mono text-pk-text-primary outline-none focus:ring-2 focus:ring-pk-text-primary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                className="h-8 w-16 border border-pk-border px-2 text-center text-sm font-mono text-pk-text-primary outline-none focus:ring-2 focus:ring-pk-text-primary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none sm:h-7"
               />
               <button
                 type="button"
                 aria-label={`Increase ${getStatName(stat)} EVs by 4`}
-                className="flex h-7 w-7 items-center justify-center border border-pk-border text-sm transition-colors hover:bg-pk-sidebar-bg"
+                className="flex h-8 w-8 items-center justify-center border border-pk-border text-sm transition-colors hover:bg-pk-sidebar-bg sm:h-7 sm:w-7"
                 onClick={() => clampValue(stat, 4)}
               >
                 +4
               </button>
             </div>
-            <div className="h-2 flex-1 bg-pk-muted-bg">
+            <div className="hidden h-2 flex-1 bg-pk-muted-bg sm:block">
               <div
                 className="h-full bg-pk-text-primary transition-all"
                 style={{ width: `${(evs[stat] / 252) * 100}%` }}
               />
             </div>
-            <span className="w-8 text-right text-xs font-mono text-pk-text-secondary">
+            <span className="w-8 shrink-0 text-right text-xs font-mono text-pk-text-secondary">
               {evs[stat]}
             </span>
           </div>

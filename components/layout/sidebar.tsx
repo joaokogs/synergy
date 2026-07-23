@@ -13,12 +13,17 @@ const navItems: { path: string; label: string; icon: typeof Users }[] = [
   { path: "/settings", label: "Settings", icon: Settings },
 ];
 
-export function Sidebar() {
+export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
 
+  const handleNavigate = (path: string) => {
+    router.push(path);
+    onNavigate?.();
+  };
+
   return (
-    <aside className="flex h-full w-64 shrink-0 flex-col border-r border-pk-border bg-pk-sidebar-bg">
+    <>
       {/* Logo */}
       <div className="flex flex-col items-center gap-2 px-6 py-6">
         <div className="flex h-14 w-20 items-center justify-center">
@@ -43,7 +48,7 @@ export function Sidebar() {
             <button
               key={item.path}
               type="button"
-              onClick={() => router.push(item.path)}
+              onClick={() => handleNavigate(item.path)}
               className={cn(
                 "flex w-full items-center gap-4 rounded-md px-3 py-2.5 text-left text-sm font-bold tracking-wide transition-colors",
                 isActive
@@ -69,6 +74,14 @@ export function Sidebar() {
           <span>GitHub</span>
         </button>
       </div>
+    </>
+  );
+}
+
+export function Sidebar() {
+  return (
+    <aside className="hidden lg:flex h-full w-64 shrink-0 flex-col border-r border-pk-border bg-pk-sidebar-bg">
+      <SidebarContent />
     </aside>
   );
 }

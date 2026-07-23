@@ -44,7 +44,7 @@ export function IvEditor({ ivs, onChange }: IvEditorProps) {
       <div className="space-y-2">
         {STAT_ORDER.map((stat) => (
           <div key={stat} className="flex items-center gap-2">
-            <span className="w-14 text-xs font-medium text-pk-text-primary">
+            <span className="w-12 shrink-0 text-xs font-medium text-pk-text-primary sm:w-14">
               {getStatName(stat)}
             </span>
             <input
@@ -56,7 +56,7 @@ export function IvEditor({ ivs, onChange }: IvEditorProps) {
               onChange={(e) => handleChange(stat, e.target.value)}
               className="h-8 w-20 border border-pk-border px-3 text-center text-sm font-mono text-pk-text-primary outline-none focus:ring-2 focus:ring-pk-text-primary [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             />
-            <div className="flex gap-1">
+            <div className="flex flex-wrap gap-1">
               {[0, 31].map((val) => (
                 <button
                   key={val}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Upload, Download, Loader2 } from "lucide-react";
+import { Upload, Download, Loader2, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -18,7 +18,7 @@ import { getPokemonData, formatMoveName } from "@/lib/pokeapi";
 import type { PokemonBase, PokemonType } from "@/types/pokemon";
 import { useTeamStore } from "@/stores/team-store";
 
-export function TopBar() {
+export function TopBar({ onMenuClick }: { onMenuClick?: () => void }) {
   const [importOpen, setImportOpen] = useState(false);
   const [paste, setPaste] = useState("");
   const [importing, setImporting] = useState(false);
@@ -174,8 +174,17 @@ export function TopBar() {
   };
 
   return (
-    <header className="flex items-center justify-end border-b border-pk-border bg-pk-card-bg px-6 py-3">
-      <div className="flex items-center gap-2">
+    <header className="flex items-center justify-between border-b border-pk-border bg-pk-card-bg px-4 py-3 md:px-6">
+      <button
+        type="button"
+        onClick={onMenuClick}
+        className="flex lg:hidden h-8 w-8 items-center justify-center rounded-md text-pk-text-secondary hover:bg-pk-hover-bg hover:text-pk-text-primary transition-colors"
+        aria-label="Open menu"
+      >
+        <Menu className="h-5 w-5" />
+      </button>
+
+      <div className="flex items-center gap-2 ml-auto">
         <ThemeToggle />
         <Dialog open={importOpen} onOpenChange={setImportOpen}>
           <DialogTrigger className="inline-flex items-center gap-1.5 rounded-md border border-input bg-background px-3 py-1.5 text-xs font-medium text-foreground shadow-xs hover:bg-accent hover:text-accent-foreground">

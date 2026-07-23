@@ -89,7 +89,7 @@ export function SpeedTierList({ currentPokemon, tier }: SpeedTierListProps) {
           return (
             <div
               key={entry.name}
-              className={`flex items-center gap-3 rounded-md px-4 py-3 transition-colors ${
+              className={`flex items-center gap-3 rounded-md px-3 py-2.5 transition-colors sm:px-4 sm:py-3 ${
                 isCurrent
                   ? "bg-pk-text-primary/10"
                   : "hover:bg-pk-hover-bg"

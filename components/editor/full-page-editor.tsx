@@ -75,10 +75,10 @@ export function FullPageEditor({
         </div>
       )}
 
-      {/* 3-column editor */}
-      <div className="flex flex-1 gap-4 overflow-hidden p-4">
+      {/* Responsive 3-column editor */}
+      <div className="flex flex-1 flex-col gap-4 overflow-hidden p-3 xl:flex-row xl:p-4">
         {/* Left Column: Visual & Core Details */}
-        <div className="flex w-[240px] shrink-0 flex-col gap-4 overflow-y-auto">
+        <div className="flex shrink-0 flex-col gap-4 overflow-y-auto xl:w-[220px]">
           {/* Sprite Card */}
           <div className="border border-pk-border bg-pk-card-bg p-4">
             <div className="flex flex-col items-center gap-2">
@@ -178,7 +178,7 @@ export function FullPageEditor({
             onUpdateIvs={onUpdateIvs}
             onUpdateEvs={onUpdateEvs}
           />
-          <div className="border border-pk-border bg-pk-card-bg p-4">
+          <div className="border border-pk-border bg-pk-card-bg p-3 md:p-4">
             <MovesetEditor
               moves={moves}
               availableMoves={allMoves ?? pokemon.moves}
@@ -188,7 +188,7 @@ export function FullPageEditor({
         </div>
 
         {/* Right Column: Side Panel (Popular Builds / Speed) */}
-        <div className="flex min-w-0 w-[35%] shrink-0 flex-col gap-4 overflow-y-auto">
+        <div className="flex min-w-0 shrink-0 flex-col gap-4 overflow-y-auto xl:w-[30%]">
           <BuilderSidePanel currentPokemon={pokemon} onUpdate={onUpdate} onUpdateEvs={onUpdateEvs} onUpdateIvs={onUpdateIvs} onUpdateMoves={onUpdateMoves} />
         </div>
       </div>
