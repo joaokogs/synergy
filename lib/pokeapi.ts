@@ -103,12 +103,32 @@ interface PokeAPISpecies {
   }[];
 }
 
+async function tryFetchPokemon(nameOrId: string | number): Promise<PokeAPIPokemon | null> {
+  try {
+    return await fetchWithCache<PokeAPIPokemon>(
+      `${POKEAPI_BASE}/pokemon/${nameOrId}`
+    );
+  } catch {
+    return null;
+  }
+}
+
 export async function getPokemonData(
   nameOrId: string | number
 ): Promise<PokemonBase> {
-  const data = await fetchWithCache<PokeAPIPokemon>(
-    `${POKEAPI_BASE}/pokemon/${nameOrId}`
-  );
+  let data = await tryFetchPokemon(nameOrId);
+
+  if (!data && typeof nameOrId === "string") {
+    data = await tryFetchPokemon(`${nameOrId}-male`);
+  }
+
+  if (!data && typeof nameOrId === "string") {
+    data = await tryFetchPokemon(`${nameOrId}-female`);
+  }
+
+  if (!data) {
+    throw new Error(`Pokémon "${nameOrId}" not found.`);
+  }
 
   const statMap: Record<string, "hp" | "atk" | "def" | "spa" | "spd" | "spe"> =
     {
