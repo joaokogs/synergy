@@ -29,7 +29,7 @@ const CELL_CLASS: Record<string, string> = {
 
 function Cell({ m }: { m: number }) {
   const label =
-    m === 0 ? "0" : m === 0.25 ? "¼" : m === 0.5 ? "½" : m === 1 ? "—" : `${m}×`;
+    m === 0 ? "0" : m === 0.25 ? "1/4" : m === 0.5 ? "1/2" : m === 1 ? "—" : `${m}×`;
   return (
     <div
       className={cn(
@@ -53,8 +53,8 @@ function Legend() {
       <span className="font-semibold text-pk-text-primary">Legend:</span>
       {[
         { label: "0", m: 0 },
-        { label: "¼", m: 0.25 },
-        { label: "½", m: 0.5 },
+        { label: "1/4", m: 0.25 },
+        { label: "1/2", m: 0.5 },
         { label: "1×", m: 1 },
         { label: "2×", m: 2 },
         { label: "4×", m: 4 },
