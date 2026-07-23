@@ -14,7 +14,7 @@ import { useState } from "react";
 import { useTeam } from "@/hooks/use-team";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { parsePokepaste } from "@/lib/parse-pokepaste";
-import { getPokemonData } from "@/lib/pokeapi";
+import { getPokemonData, formatMoveName } from "@/lib/pokeapi";
 import type { PokemonBase, PokemonType } from "@/types/pokemon";
 import { useTeamStore } from "@/stores/team-store";
 
@@ -161,7 +161,7 @@ export function TopBar() {
 
         const moves = m.moves.filter((m): m is string => m !== null)
         if (moves.length > 0) {
-          lines.push(...moves.map((move) => `- ${toDisplayName(move)}`))
+          lines.push(...moves.map((move) => `- ${formatMoveName(move)}`))
         }
 
         return lines.join("\n")

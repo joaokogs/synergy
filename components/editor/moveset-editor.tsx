@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { TYPE_COLORS } from "@/lib/type-utils";
 import { TypeIcon } from "@/components/pokemon/type-icon";
 import { CategoryIcon } from "@/components/pokemon/category-icon";
-import { getMoveData, type MoveInfo } from "@/lib/pokeapi";
+import { getMoveData, formatMoveName, type MoveInfo } from "@/lib/pokeapi";
 import type { PokemonType } from "@/types/pokemon";
 import {
   Popover,
@@ -51,7 +51,15 @@ export function MovesetEditor({
   const filteredMoves = useMemo(
     () =>
       availableMoves
-        .filter((m) => m.toLowerCase().includes(searchQuery.toLowerCase()))
+        .filter((m) => {
+          const q = searchQuery.toLowerCase().trim();
+          if (!q) return true;
+          const displayName = m.replace(/-/g, " ");
+          return (
+            m.includes(q.replace(/\s+/g, "-")) ||
+            displayName.includes(q)
+          );
+        })
         .slice(0, 80),
     [availableMoves, searchQuery]
   );
@@ -195,7 +203,7 @@ function MoveSlotBadge({
   const typeColor = TYPE_COLORS[moveType] ?? "#A8A77A";
   const hasMove = !!(moveName && moveData);
 
-  const displayName = moveData?.displayName ?? moveName?.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+  const displayName = moveData?.displayName ?? (moveName ? formatMoveName(moveName) : "");
 
   if (!hasMove) {
     return (
@@ -332,9 +340,8 @@ function MoveOption({
   const type = (moveData?.type ?? "normal") as PokemonType;
   const category = moveData?.category ?? "status";
   const typeColor = TYPE_COLORS[type] ?? "#A8A77A";
-  const displayName = move
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+  const displayName =
+    moveData?.displayName ?? formatMoveName(move);
 
   const triggerContent = (
     <>

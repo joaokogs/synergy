@@ -434,6 +434,23 @@ export async function getAbilityData(abilityName: string): Promise<AbilityInfo |
   }
 }
 
+const HYPHENATED_MOVES = new Set([
+  "u-turn",
+  "v-create",
+  "trick-or-treat",
+  "freeze-dry",
+]);
+
+export function formatMoveName(name: string): string {
+  if (HYPHENATED_MOVES.has(name)) {
+    return name
+      .split("-")
+      .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+      .join("-");
+  }
+  return name.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 // ─── Moves ──────────────────────────────────────────────
 
 export type MoveCategory = "physical" | "special" | "status";
@@ -487,17 +504,25 @@ export async function getMoveData(moveName: string): Promise<MoveInfo | null> {
       power: number | null;
       accuracy: number | null;
       pp: number;
+      names: { language: { name: string }; name: string }[];
       effect_entries: { effect: string; language: { name: string } }[];
     }>(`${POKEAPI_BASE}/move/${moveName}`);
 
     const effect =
       data.effect_entries?.find((e) => e.language.name === "en")?.effect ?? null;
 
+    const officialName = data.names?.find(
+      (n) => n.language.name === "en"
+    )?.name;
+    const displayName =
+      officialName ??
+      data.name
+        .replace(/-/g, " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase());
+
     const info: MoveInfo = {
       name: data.name,
-      displayName: data.name
-        .replace(/-/g, " ")
-        .replace(/\b\w/g, (c) => c.toUpperCase()),
+      displayName,
       type: data.type.name as PokemonType,
       category: data.damage_class.name as MoveCategory,
       power: data.power,
