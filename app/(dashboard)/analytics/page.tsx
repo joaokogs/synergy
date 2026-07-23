@@ -223,8 +223,12 @@ export default function AnalyticsPage() {
                 const resistances = analysis.members.filter((m) => m.multipliers[attackType] < 1).length;
                 return (
                   <div key={attackType} className="flex border-b border-pk-border last:border-b-0">
-                    <div className="flex w-[88px] shrink-0 items-center gap-2 px-3 py-1">
-                      <TypeIcon type={attackType} size={13} />
+                    <div className="flex w-[88px] shrink-0 items-center gap-1 px-3 py-1">
+                      <TypeIcon
+                        type={attackType}
+                        size={13}
+                        className="shrink-0"
+                      />
                       <span
                         className="text-[11px] font-bold capitalize leading-none"
                         style={{ color }}
