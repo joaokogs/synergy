@@ -12,8 +12,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Synergy",
-  description: "Synergy — Pokémon Team Builder",
+  title: "Tap",
+  description: "Tap — Pokémon Team Builder",
   icons: [{ rel: "icon", url: "/favicon.png" }],
 };
 

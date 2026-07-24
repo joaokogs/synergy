@@ -1,6 +1,6 @@
 <div align="center">
-  <img src="./assets/synergy_logo.png" alt="Synergy Logo" width="120" />
-  <h1>Synergy</h1>
+  <img src="./assets/tap_logo.png" alt="Tap Logo" width="120" />
+  <h1>Tap</h1>
   <p><strong>Pokémon Team Builder</strong></p>
 
   <p>
@@ -142,7 +142,7 @@ src/
 
 ## 💬 Community
 
-Join the **Synergy** community on Discord to share teams, report bugs, suggest features, or just hang out.
+Join the **Tap** community on Discord to share teams, report bugs, suggest features, or just hang out.
 
 [![Discord](https://img.shields.io/badge/Discord-5865F2?logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/NaPWwzXg9A)
 

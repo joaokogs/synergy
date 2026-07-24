@@ -2,7 +2,7 @@
 
 import { Users, Wrench, BarChart3, Settings, Code2 } from "lucide-react";
 import Image from "next/image";
-import synergyLogo from "@/assets/synergy_logo.png";
+import tapLogo from "@/assets/tap_logo.png";
 import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -16,7 +16,6 @@ const navItems: { path: string; label: string; icon: typeof Users }[] = [
 export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
-
   const handleNavigate = (path: string) => {
     router.push(path);
     onNavigate?.();
@@ -27,11 +26,11 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       {/* Logo */}
       <div className="flex flex-col items-center gap-2 px-6 py-6">
         <div className="flex h-14 w-20 items-center justify-center">
-          <Image src={synergyLogo} alt="Synergy" className="h-full w-full object-contain" />
+          <Image src={tapLogo} alt="Tap" className="h-full w-full object-contain" />
         </div>
         <div className="flex flex-col items-center">
           <span className="text-lg font-semibold leading-tight text-pk-text-primary">
-            Synergy
+            Tap
           </span>
           <span className="text-[10px] font-normal tracking-widest text-pk-text-secondary">
             Team Builder
@@ -67,7 +66,7 @@ export function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       <div className="border-t border-pk-border px-4 py-4">
         <button
           type="button"
-          onClick={() => window.open("https://github.com/joaokogs/synergy", "_blank")}
+          onClick={() => window.open("https://github.com/joaokogs/tap", "_blank")}
           className="flex w-full items-center gap-4 rounded-md px-3 py-2 text-left text-sm font-bold text-pk-text-secondary transition-colors hover:text-pk-text-primary cursor-pointer"
         >
           <Code2 className="h-4 w-4 shrink-0" />

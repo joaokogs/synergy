@@ -293,7 +293,7 @@ export const useTeamStore = create<TeamState>()(
         })),
     }),
     {
-      name: "synergy-teams",
+      name: "tap-teams",
       partialize: (state) => ({
         teams: state.teams,
         activeTeamId: state.activeTeamId,
